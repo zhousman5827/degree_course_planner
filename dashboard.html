@@ -1,0 +1,1631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0c1f3f;
+  --navy2: #1a3460;
+  --navy3: #22437a;
+  --blue: #2563a8;
+  --blue-light: #dce8f5;
+  --blue-mid: #b3cde8;
+  --accent: #c8a84b;
+  --accent-light: #f5edd8;
+  --white: #ffffff;
+  --off-white: #f7f6f3;
+  --gray1: #e8e6e0;
+  --gray2: #c5c0b5;
+  --gray3: #8a857a;
+  --gray4: #4a4640;
+  --text: #1a1714;
+  --text2: #4a4640;
+  --text3: #8a857a;
+  --red: #b03a2e;
+  --red-light: #f5ddd9;
+  --green: #1e6e45;
+  --green-light: #d4ecdf;
+  --orange: #c06020;
+  --orange-light: #f5e6d4;
+  --purple: #5a3e8a;
+  --purple-light: #ede8f5;
+  --border: #ddd9d0;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--off-white);
+  color: var(--text);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 400;
+  min-height: 100vh;
+  font-size: 13px;
+}
+
+/* ── TOP BAR ── */
+#topbar {
+  background: var(--navy);
+  display: flex;
+  align-items: stretch;
+  height: 48px;
+  border-bottom: 3px solid var(--accent);
+}
+
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  border-right: 1px solid rgba(255,255,255,0.12);
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.brand-rule {
+  width: 3px;
+  height: 22px;
+  background: var(--accent);
+}
+
+.brand-text {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 300;
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.9);
+}
+
+.brand-text strong {
+  font-weight: 600;
+  color: #fff;
+}
+
+.topbar-apps {
+  display: flex;
+  align-items: stretch;
+  flex: 1;
+}
+
+.app-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 22px;
+  background: none;
+  border: none;
+  border-right: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.55);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+}
+
+.app-btn:hover { color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.05); }
+
+.app-btn.active {
+  color: #fff;
+  background: rgba(255,255,255,0.08);
+}
+
+.app-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 100%; height: 3px;
+  background: var(--accent);
+  margin-bottom: -3px;
+}
+
+.app-btn-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0;
+}
+.app-btn.active .app-btn-dot { opacity: 1; }
+
+.topbar-meta {
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 6px;
+  margin-left: auto;
+  border-left: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.35);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+/* ── APP VIEWS ── */
+.app-view { display: none; }
+.app-view.active { display: block; }
+
+/* ══════════════════════════════════════
+   LAMP LIST
+══════════════════════════════════════ */
+
+/* Slide header */
+.slide-header {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 0;
+  display: flex;
+  align-items: stretch;
+  min-height: 56px;
+}
+
+.slide-title-block {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 28px;
+  border-right: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.slide-title-rule {
+  width: 3px;
+  height: 28px;
+  background: var(--blue);
+  flex-shrink: 0;
+}
+
+.slide-title-text {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  color: var(--navy);
+  text-transform: uppercase;
+}
+
+.slide-subtitle {
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--text3);
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+.slide-tabs {
+  display: flex;
+  align-items: stretch;
+  padding: 0 12px;
+}
+
+.slide-tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0 16px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+}
+
+.slide-tab:hover { color: var(--navy); border-bottom-color: var(--gray2); }
+
+.slide-tab.active {
+  color: var(--blue);
+  border-bottom-color: var(--blue);
+}
+
+.tab-pill {
+  background: var(--blue-light);
+  color: var(--blue);
+  font-size: 9px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 2px;
+  letter-spacing: 0;
+  min-width: 18px;
+  text-align: center;
+}
+
+.slide-tab.active .tab-pill { background: var(--blue); color: #fff; }
+
+.slide-actions {
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 8px;
+  margin-left: auto;
+  border-left: 1px solid var(--border);
+}
+
+/* KPI stripe */
+.kpi-stripe {
+  display: flex;
+  background: var(--navy);
+}
+
+.kpi-cell {
+  flex: 1;
+  padding: 14px 24px;
+  border-right: 1px solid rgba(255,255,255,0.08);
+  position: relative;
+}
+.kpi-cell:last-child { border-right: none; }
+
+.kpi-label {
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 5px;
+}
+
+.kpi-value {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 24px;
+  font-weight: 300;
+  color: #fff;
+  line-height: 1;
+  letter-spacing: -1px;
+}
+
+.kpi-value span {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: rgba(255,255,255,0.5);
+  margin-left: 4px;
+}
+
+.kpi-bar {
+  position: absolute;
+  bottom: 0; left: 0;
+  height: 2px;
+}
+
+.kpi-cell:nth-child(1) .kpi-bar { background: var(--accent); }
+.kpi-cell:nth-child(2) .kpi-bar { background: #4af0c8; }
+.kpi-cell:nth-child(3) .kpi-bar { background: #c084fc; }
+.kpi-cell:nth-child(4) .kpi-bar { background: #f87171; }
+.kpi-cell:nth-child(5) .kpi-bar { background: #34d399; }
+
+/* Lamp panels */
+.lamp-panel { display: none; }
+.lamp-panel.active { display: block; }
+
+/* Toolbar */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 24px;
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--off-white);
+  border: 1px solid var(--border);
+  padding: 6px 10px;
+  flex: 1;
+  max-width: 280px;
+}
+
+.search-box input {
+  background: none;
+  border: none;
+  outline: none;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 12px;
+  color: var(--text);
+  width: 100%;
+}
+
+.search-box input::placeholder { color: var(--text3); }
+
+.search-icon { color: var(--text3); font-size: 13px; flex-shrink: 0; }
+
+.filter-pill {
+  background: var(--off-white);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 6px 10px;
+  cursor: pointer;
+  outline: none;
+}
+
+.filter-pill option { background: #fff; }
+
+.t-spacer { flex: 1; }
+
+.row-counter {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text3);
+  padding: 0 6px;
+  border-left: 2px solid var(--accent);
+}
+
+.add-btn {
+  background: var(--navy);
+  color: #fff;
+  border: none;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 7px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.add-btn:hover { background: var(--navy2); }
+
+/* Table */
+.table-wrap { overflow-x: auto; background: var(--white); }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+thead tr {
+  background: var(--off-white);
+  border-bottom: 2px solid var(--navy);
+}
+
+thead th {
+  text-align: left;
+  padding: 9px 14px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--navy);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+}
+
+thead th:hover { color: var(--blue); }
+thead th .si { margin-left: 3px; opacity: 0.35; font-size: 9px; }
+thead th.sorted .si { opacity: 1; color: var(--blue); }
+
+tbody tr {
+  border-bottom: 1px solid var(--gray1);
+  transition: background 0.1s;
+}
+
+tbody tr:hover { background: #f0eee8; }
+
+tbody td {
+  padding: 9px 14px;
+  vertical-align: middle;
+  color: var(--text);
+}
+
+.c-company {
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--navy);
+  min-width: 150px;
+}
+
+.c-role { min-width: 150px; color: var(--text2); }
+.c-area { min-width: 110px; color: var(--text2); font-size: 11px; }
+.c-loc { min-width: 120px; color: var(--text3); font-size: 11px; }
+.c-date { min-width: 95px; font-size: 11px; font-family: 'IBM Plex Mono', monospace; color: var(--text2); }
+.c-chats { min-width: 55px; text-align: center; }
+.c-notes { min-width: 180px; font-size: 11px; color: var(--text2); }
+.c-link { min-width: 44px; text-align: center; }
+.c-act { min-width: 44px; text-align: right; }
+
+/* Status badges */
+.badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  white-space: nowrap;
+}
+
+.b-Submitted { background: var(--blue-light); color: var(--blue); }
+.b-Planned   { background: var(--purple-light); color: var(--purple); }
+.b-Rejected  { background: var(--red-light); color: var(--red); }
+.b-Ghosted   { background: var(--orange-light); color: var(--orange); }
+.b-Active    { background: var(--accent-light); color: #7a5c10; }
+.b-Offer     { background: var(--green-light); color: var(--green); }
+.b-TBD       { background: var(--gray1); color: var(--text3); }
+
+.status-sel {
+  appearance: none;
+  border: none;
+  font-family: 'IBM Plex Sans', monospace;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  cursor: pointer;
+  outline: none;
+}
+
+.vet-tag {
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 2px 5px;
+  background: var(--accent-light);
+  color: #7a5c10;
+  border-left: 2px solid var(--accent);
+}
+
+/* Editable */
+[contenteditable=true] {
+  outline: none;
+  background: #fffbe8;
+  box-shadow: inset 0 0 0 1px var(--accent);
+  padding: 1px 3px;
+}
+
+.link-out {
+  color: var(--blue);
+  font-size: 11px;
+  text-decoration: none;
+  font-family: 'IBM Plex Mono', monospace;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+}
+.link-out:hover { opacity: 1; }
+
+.del-btn {
+  background: none;
+  border: none;
+  color: var(--gray2);
+  cursor: pointer;
+  font-size: 15px;
+  padding: 2px 5px;
+  transition: color 0.15s;
+  line-height: 1;
+}
+.del-btn:hover { color: var(--red); }
+
+.empty-row td {
+  text-align: center;
+  padding: 40px;
+  color: var(--text3);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border: none;
+}
+
+/* Coffee checkboxes */
+.check-cell { text-align: center; }
+.ck {
+  width: 14px; height: 14px;
+  accent-color: var(--navy);
+  cursor: pointer;
+}
+
+/* ── MODAL ── */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(12,31,63,0.55);
+  z-index: 500;
+  align-items: center;
+  justify-content: center;
+}
+.overlay.open { display: flex; }
+
+.modal-box {
+  background: var(--white);
+  border-top: 4px solid var(--navy);
+  width: 580px;
+  max-width: 95vw;
+  max-height: 88vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  animation: mIn 0.2s ease;
+}
+@keyframes mIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+.modal-hd {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-hd-rule { width: 3px; height: 22px; background: var(--blue); flex-shrink: 0; }
+
+.modal-title {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--navy);
+}
+
+.modal-body { padding: 20px 22px; }
+
+.fg { display: flex; flex-direction: column; gap: 4px; margin-bottom: 14px; }
+
+.fl { font-size: 9px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text3); }
+
+.fi, .fs, .fta {
+  background: var(--off-white);
+  border: 1px solid var(--border);
+  border-bottom: 2px solid var(--navy);
+  color: var(--text);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 12px;
+  padding: 8px 10px;
+  outline: none;
+  width: 100%;
+  transition: border-color 0.15s;
+}
+.fi:focus, .fs:focus, .fta:focus { border-bottom-color: var(--blue); background: #fff; }
+.fta { resize: vertical; min-height: 65px; }
+.fs option { background: #fff; }
+
+.mg2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+.full { grid-column: 1 / -1; }
+
+.modal-ft {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 22px;
+  border-top: 1px solid var(--border);
+  background: var(--off-white);
+}
+
+.btn-cancel {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text2);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 7px 16px;
+  cursor: pointer;
+}
+.btn-cancel:hover { border-color: var(--gray3); }
+
+.btn-save {
+  background: var(--navy);
+  border: none;
+  color: #fff;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 7px 20px;
+  cursor: pointer;
+}
+.btn-save:hover { background: var(--blue); }
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: var(--navy);
+  border-left: 3px solid var(--accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 10px 18px;
+  z-index: 9999;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: all 0.25s;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+/* ══════════════════════════════════════
+   DEGREE PLANNER
+══════════════════════════════════════ */
+#app-degree {
+  background: var(--off-white);
+  min-height: calc(100vh - 48px);
+}
+
+.dp-header {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 20px 28px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.dp-title-block { display: flex; align-items: flex-end; gap: 14px; }
+.dp-rule { width: 3px; height: 38px; background: var(--blue); flex-shrink: 0; }
+
+.dp-title {
+  font-family: 'EB Garamond', serif;
+  font-size: 28px;
+  font-weight: 400;
+  color: var(--navy);
+  line-height: 1;
+  letter-spacing: -0.5px;
+}
+
+.dp-title em {
+  font-style: italic;
+  color: var(--blue);
+}
+
+.dp-subtitle-text {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-top: 5px;
+}
+
+.dp-date { font-size: 10px; color: var(--text3); font-family: 'IBM Plex Mono', monospace; }
+
+/* KPI row */
+.dp-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--white);
+}
+
+.dp-kpi {
+  padding: 16px 28px;
+  border-right: 1px solid var(--border);
+  position: relative;
+}
+.dp-kpi:last-child { border-right: none; }
+
+.dp-kpi::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 28px;
+  width: 28px; height: 2px;
+}
+
+.dp-kpi:nth-child(1)::before { background: var(--blue); }
+.dp-kpi:nth-child(2)::before { background: var(--accent); }
+.dp-kpi:nth-child(3)::before { background: var(--green); }
+.dp-kpi:nth-child(4)::before { background: var(--red); }
+
+.dp-kpi-label {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 6px;
+}
+
+.dp-kpi-val {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 28px;
+  font-weight: 300;
+  color: var(--navy);
+  line-height: 1;
+  letter-spacing: -1px;
+}
+
+.dp-kpi-val sub {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--text3);
+  vertical-align: baseline;
+  margin-left: 3px;
+}
+
+/* GPA bar */
+.dp-gpa-track {
+  height: 3px;
+  background: var(--gray1);
+  margin-top: 8px;
+}
+.dp-gpa-fill {
+  height: 100%;
+  background: var(--blue);
+  transition: width 0.5s ease;
+}
+
+/* Main layout */
+.dp-main { display: grid; grid-template-columns: 300px 1fr; gap: 0; min-height: calc(100vh - 220px); }
+
+.dp-sidebar {
+  background: var(--white);
+  border-right: 1px solid var(--border);
+  padding: 22px;
+}
+
+.dp-sidebar-title {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--navy);
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--navy);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dp-sidebar-title::before {
+  content: '';
+  display: block;
+  width: 10px; height: 2px;
+  background: var(--accent);
+}
+
+.dp-field { margin-bottom: 12px; }
+
+.dp-label {
+  display: block;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 4px;
+}
+
+.dp-input, .dp-select {
+  width: 100%;
+  background: var(--off-white);
+  border: 1px solid var(--border);
+  border-bottom: 2px solid var(--navy);
+  color: var(--text);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 12px;
+  padding: 7px 10px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.dp-input:focus, .dp-select:focus { border-bottom-color: var(--blue); background: #fff; }
+.dp-select option { background: #fff; }
+
+.dp-add-btn {
+  width: 100%;
+  padding: 10px;
+  background: var(--navy);
+  color: #fff;
+  border: none;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: background 0.15s;
+}
+.dp-add-btn:hover { background: var(--blue); }
+
+/* Courses area */
+.dp-courses { padding: 22px 28px; background: var(--off-white); }
+
+.dp-sem-block { margin-bottom: 20px; }
+
+.dp-sem-hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--navy);
+  padding: 8px 14px;
+  margin-bottom: 0;
+}
+
+.dp-sem-name {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.85);
+}
+
+.dp-sem-stats {
+  font-size: 10px;
+  color: rgba(255,255,255,0.5);
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.dp-col-hd {
+  display: grid;
+  grid-template-columns: 1fr 70px 70px 80px 36px;
+  gap: 0;
+  background: var(--off-white);
+  border: 1px solid var(--border);
+  border-top: none;
+  padding: 5px 14px;
+}
+
+.dp-col-hd span {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text3);
+  text-align: center;
+}
+.dp-col-hd span:first-child { text-align: left; }
+
+.dp-course-row {
+  display: grid;
+  grid-template-columns: 1fr 70px 70px 80px 36px;
+  gap: 0;
+  align-items: center;
+  padding: 8px 14px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-top: none;
+  transition: background 0.1s;
+}
+.dp-course-row:hover { background: #f0eee8; }
+
+.dp-cn { font-size: 12px; font-weight: 500; color: var(--text); }
+.dp-cr { font-size: 11px; color: var(--text3); text-align: center; font-family: 'IBM Plex Mono', monospace; }
+
+.dp-status-done { text-align: center; font-size: 9px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--green); }
+.dp-status-ip   { text-align: center; font-size: 9px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--text3); }
+
+.dp-grade {
+  text-align: center;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  padding: 2px 6px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.gA  { background: var(--green-light); color: var(--green); }
+.gB  { background: var(--blue-light); color: var(--blue); }
+.gC  { background: var(--accent-light); color: #7a5c10; }
+.gD  { background: var(--orange-light); color: var(--orange); }
+.gF  { background: var(--red-light); color: var(--red); }
+.gIP { background: var(--gray1); color: var(--text3); }
+
+.dp-del {
+  background: none;
+  border: none;
+  color: var(--gray2);
+  cursor: pointer;
+  font-size: 14px;
+  text-align: center;
+  width: 100%;
+  padding: 2px;
+  transition: color 0.15s;
+}
+.dp-del:hover { color: var(--red); }
+
+.dp-empty {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-top: none;
+  padding: 32px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div class="topbar-brand">
+    <div class="brand-rule"></div>
+    <div class="brand-text"><strong>My</strong> Dashboard</div>
+  </div>
+  <div class="topbar-apps">
+    <button class="app-btn active" onclick="switchApp('lamp', this)">
+      <div class="app-btn-dot"></div>
+      LAMP List
+    </button>
+    <button class="app-btn" onclick="switchApp('degree', this)">
+      <div class="app-btn-dot"></div>
+      Degree Planner
+    </button>
+  </div>
+  <div class="topbar-meta">Confidential &nbsp;·&nbsp; Draft</div>
+</div>
+
+<!-- ════════════════════════════════
+     LAMP LIST APP
+════════════════════════════════ -->
+<div class="app-view active" id="app-lamp">
+
+  <!-- Slide header -->
+  <div class="slide-header">
+    <div class="slide-title-block">
+      <div class="slide-title-rule"></div>
+      <div>
+        <div class="slide-title-text">LAMP List</div>
+        <div class="slide-subtitle">Leadership & Application Management Pipeline</div>
+      </div>
+    </div>
+    <div class="slide-tabs">
+      <button class="slide-tab active" onclick="lampTab('active', event)">Active <span class="tab-pill" id="cnt-active">0</span></button>
+      <button class="slide-tab" onclick="lampTab('planned', event)">Planned <span class="tab-pill" id="cnt-planned">0</span></button>
+      <button class="slide-tab" onclick="lampTab('rejections', event)">Rejections <span class="tab-pill" id="cnt-rejections">0</span></button>
+      <button class="slide-tab" onclick="lampTab('coffee', event)">Coffee Chats <span class="tab-pill" id="cnt-coffee">0</span></button>
+    </div>
+    <div class="slide-actions">
+      <button class="add-btn" onclick="openModal()">&#43; Add Row</button>
+    </div>
+  </div>
+
+  <!-- KPI stripe -->
+  <div class="kpi-stripe">
+    <div class="kpi-cell"><div class="kpi-bar"></div><div class="kpi-label">Total Pipeline</div><div class="kpi-value" id="sum-total">0</div></div>
+    <div class="kpi-cell"><div class="kpi-bar"></div><div class="kpi-label">Submitted</div><div class="kpi-value" id="sum-submitted">0</div></div>
+    <div class="kpi-cell"><div class="kpi-bar"></div><div class="kpi-label">Planned</div><div class="kpi-value" id="sum-planned">0</div></div>
+    <div class="kpi-cell"><div class="kpi-bar"></div><div class="kpi-label">Rejected / Ghosted</div><div class="kpi-value" id="sum-rejected">0</div></div>
+    <div class="kpi-cell"><div class="kpi-bar"></div><div class="kpi-label">Coffee Chats</div><div class="kpi-value" id="sum-chats">0</div></div>
+  </div>
+
+  <!-- ACTIVE -->
+  <div class="lamp-panel active" id="panel-active">
+    <div class="toolbar">
+      <div class="search-box">
+        <span class="search-icon">&#128269;</span>
+        <input type="text" placeholder="Search companies, roles…" oninput="rActive()">
+      </div>
+      <select class="filter-pill" onchange="rActive()">
+        <option value="">All Statuses</option>
+        <option>Submitted</option><option>Active</option><option>Offer</option>
+      </select>
+      <div class="t-spacer"></div>
+      <span class="row-counter" id="rc-active"></span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th onclick="srt('active','company')">Company <span class="si">▲▼</span></th>
+          <th onclick="srt('active','area')">Area <span class="si">▲▼</span></th>
+          <th onclick="srt('active','role')">Role <span class="si">▲▼</span></th>
+          <th onclick="srt('active','status')">Status <span class="si">▲▼</span></th>
+          <th onclick="srt('active','deadline')">Deadline <span class="si">▲▼</span></th>
+          <th>Location</th><th>Corp Event</th><th>Chats</th><th>Practitioners</th><th>Notes</th><th>Link</th><th></th>
+        </tr></thead>
+        <tbody id="tbody-active"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PLANNED -->
+  <div class="lamp-panel" id="panel-planned">
+    <div class="toolbar">
+      <div class="search-box">
+        <span class="search-icon">&#128269;</span>
+        <input type="text" placeholder="Search companies, roles…" oninput="rPlanned()">
+      </div>
+      <div class="t-spacer"></div>
+      <span class="row-counter" id="rc-planned"></span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th onclick="srt('planned','company')">Company <span class="si">▲▼</span></th>
+          <th>Area</th><th>Role</th><th>Vet.</th>
+          <th onclick="srt('planned','status')">Status <span class="si">▲▼</span></th>
+          <th>Deadline</th><th>Location</th><th>Corp Event</th><th>Chats</th><th>Practitioners</th><th>Link</th><th>Notes</th><th></th>
+        </tr></thead>
+        <tbody id="tbody-planned"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- REJECTIONS -->
+  <div class="lamp-panel" id="panel-rejections">
+    <div class="toolbar">
+      <div class="search-box">
+        <span class="search-icon">&#128269;</span>
+        <input type="text" placeholder="Search firms…" oninput="rRejections()">
+      </div>
+      <select class="filter-pill" onchange="rRejections()">
+        <option value="">All</option><option>Rejected</option><option>Ghosted</option>
+      </select>
+      <div class="t-spacer"></div>
+      <span class="row-counter" id="rc-rejections"></span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Firm / Company</th><th>Area of Focus</th>
+          <th onclick="srt('rejections','status')">Status <span class="si">▲▼</span></th>
+          <th onclick="srt('rejections','deadline')">Deadline <span class="si">▲▼</span></th>
+          <th>Location</th><th>Corp Event</th><th>Engagement Strategy</th>
+          <th>Req.</th><th>Done</th><th>Practitioners</th><th>Link</th><th>Notes</th><th></th>
+        </tr></thead>
+        <tbody id="tbody-rejections"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- COFFEE -->
+  <div class="lamp-panel" id="panel-coffee">
+    <div class="toolbar">
+      <div class="search-box">
+        <span class="search-icon">&#128269;</span>
+        <input type="text" placeholder="Search names, companies…" oninput="rCoffee()">
+      </div>
+      <div class="t-spacer"></div>
+      <span class="row-counter" id="rc-coffee"></span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th onclick="srt('coffee','name')">Name / Date <span class="si">▲▼</span></th>
+          <th>Notes / Feedback</th><th>Company</th><th>Function</th>
+          <th>Sent</th><th>Resp. Pend.</th><th>Confirmed</th>
+          <th onclick="srt('coffee','complete')">Complete <span class="si">▲▼</span></th>
+          <th>Thank You</th><th></th>
+        </tr></thead>
+        <tbody id="tbody-coffee"></tbody>
+      </table>
+    </div>
+  </div>
+</div><!-- /app-lamp -->
+
+<!-- LAMP Modal -->
+<div class="overlay" id="modal-ov" onclick="closeModal(event)">
+  <div class="modal-box">
+    <div class="modal-hd"><div class="modal-hd-rule"></div><div class="modal-title" id="modal-ttl">Add Entry</div></div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-ft">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveModal()">Save Entry</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════
+     DEGREE PLANNER APP
+════════════════════════════════ -->
+<div class="app-view" id="app-degree">
+
+  <div class="dp-header">
+    <div class="dp-title-block">
+      <div class="dp-rule"></div>
+      <div>
+        <div class="dp-title">Degree <em>Planner</em></div>
+        <div class="dp-subtitle-text">Academic Progress Tracker</div>
+      </div>
+    </div>
+    <div class="dp-date" id="dp-date"></div>
+  </div>
+
+  <div class="dp-kpi-row">
+    <div class="dp-kpi">
+      <div class="dp-kpi-label">Cumulative GPA</div>
+      <div class="dp-kpi-val" id="dp-gpa">—</div>
+      <div class="dp-gpa-track"><div class="dp-gpa-fill" id="dp-gpa-bar" style="width:0%"></div></div>
+    </div>
+    <div class="dp-kpi">
+      <div class="dp-kpi-label">Credits Completed</div>
+      <div class="dp-kpi-val" id="dp-credits">0<sub>/ 120</sub></div>
+    </div>
+    <div class="dp-kpi">
+      <div class="dp-kpi-label">Total Courses</div>
+      <div class="dp-kpi-val" id="dp-courses">0</div>
+    </div>
+    <div class="dp-kpi">
+      <div class="dp-kpi-label">Credits Remaining</div>
+      <div class="dp-kpi-val" id="dp-remaining">120</div>
+    </div>
+  </div>
+
+  <div class="dp-main">
+    <div class="dp-sidebar">
+      <div class="dp-sidebar-title">Add Course</div>
+      <div class="dp-field"><label class="dp-label">Course Name</label><input class="dp-input" id="dp-name" placeholder="e.g. Intro to Python" type="text"></div>
+      <div class="dp-field"><label class="dp-label">Credits</label><input class="dp-input" id="dp-credits" type="number" min="0.5" max="12" step="0.5" placeholder="3"></div>
+      <div class="dp-field"><label class="dp-label">Year</label>
+        <select class="dp-select" id="dp-year"><option>Year 1</option><option>Year 2</option><option>Year 3</option><option>Year 4</option></select>
+      </div>
+      <div class="dp-field"><label class="dp-label">Semester</label>
+        <select class="dp-select" id="dp-sem"><option>Semester 1</option><option>Semester 2</option><option>Summer</option></select>
+      </div>
+      <div class="dp-field"><label class="dp-label">Grade</label>
+        <select class="dp-select" id="dp-grade">
+          <option value="IP">In Progress</option>
+          <option value="A">A (4.0)</option><option value="A-">A– (3.7)</option>
+          <option value="B+">B+ (3.3)</option><option value="B">B (3.0)</option><option value="B-">B– (2.7)</option>
+          <option value="C+">C+ (2.3)</option><option value="C">C (2.0)</option><option value="C-">C– (1.7)</option>
+          <option value="D+">D+ (1.3)</option><option value="D">D (1.0)</option><option value="F">F (0.0)</option>
+        </select>
+      </div>
+      <button class="dp-add-btn" onclick="dpAdd()">+ Add Course</button>
+    </div>
+
+    <div class="dp-courses" id="dp-courses-panel">
+      <div class="dp-empty">No courses yet — add your first course</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── APP TOGGLE ── */
+function switchApp(app, btn) {
+  document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.app-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('app-' + app).classList.add('active');
+  btn.classList.add('active');
+}
+
+/* ── TOAST ── */
+let _tt;
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(_tt); _tt = setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+/* ════════════════════════
+   LAMP LIST
+════════════════════════ */
+const LK = 'lamp-list-v2';
+const LDEFS = {
+  active:[
+    {id:1,company:'General Dynamics',area:'Defense',role:'Business Support',status:'Submitted',deadline:'TBD',location:'Dedham, MA',event:'',chats:'',practitioners:'',link:'https://www.gd.com/careers/business-support-intern-dedham-ma-us-2026-71500-gdms-opportunity',notes:''},
+    {id:2,company:'Honeywell International',area:'Manufacturing',role:'General Management',status:'Submitted',deadline:'TBD',location:'Charlotte, NC',event:'',chats:'',practitioners:'',link:'https://ibqbjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/Honeywell/my-profile',notes:''},
+    {id:3,company:'Adobe Inc.',area:'Software',role:'Product Manager',status:'Submitted',deadline:'TBD',location:'San Francisco, CA',event:'',chats:'',practitioners:'',link:'https://careers.adobe.com/us/en/apply',notes:''},
+    {id:4,company:'TikTok',area:'Social Media',role:'Global Sports',status:'Submitted',deadline:'TBD',location:'New York City, NY',event:'',chats:'',practitioners:'',link:'https://lifeattiktok.com/resume/7632491893825800453/apply',notes:''},
+    {id:5,company:'Palantir Technologies',area:'Software',role:'American Tech Fellowship',status:'Submitted',deadline:'TBD',location:'Remote',event:'',chats:'',practitioners:'',link:'https://www.palantir.com/american-tech-fellowship/',notes:''},
+    {id:6,company:'Shield AI',area:'Defense',role:'Strategy & Operations',status:'Submitted',deadline:'TBD',location:'San Francisco, CA',event:'',chats:'',practitioners:'',link:'https://jobs.lever.co/shieldai/1721f9b3-b098-4988-bbb6-2d0382936be5',notes:''},
+    {id:7,company:'Skydio',area:'Defense',role:'Supply Chain',status:'Submitted',deadline:'TBD',location:'San Mateo, CA',event:'',chats:'',practitioners:'',link:'https://jobs.ashbyhq.com/skydio/2d21f482-3224-4906-a1bb-6a64436774cb',notes:''},
+    {id:8,company:'Wellspoken',area:'Software',role:'Growth & Operations',status:'Submitted',deadline:'TBD',location:'Remote',event:'',chats:'',practitioners:'',link:'https://mba-johnson-cornell.12twenty.com/jobPostings',notes:''},
+  ],
+  planned:[
+    {id:101,company:'JPMorganChase',area:'Financial Services',role:'Military Pathways Rotational Program',veteran:'Yes',status:'Planned',deadline:'TBD',location:'New York, NY / Wilmington, DE',event:'TBD',chats:'TBD',practitioners:'TBD',link:'https://www.jpmorganchase.com',notes:'TBD'},
+    {id:102,company:'Palantir Technologies',area:'Software Platforms',role:'Deployment Strategist',veteran:'No',status:'Planned',deadline:'TBD',location:'New York, NY / Washington, D.C.',event:'TBD',chats:'TBD',practitioners:'TBD',link:'https://www.palantir.com/careers/open-positions/',notes:'TBD'},
+    {id:103,company:'GE Aerospace',area:'Aerospace/Defense',role:'Military Officer Leadership Program',veteran:'Yes',status:'Planned',deadline:'TBD',location:'Lynn, MA / Evendale, OH',event:'TBD',chats:'TBD',practitioners:'TBD',link:'https://careers.geaerospace.com/global/en/military-officer-leadership-program',notes:'TBD'},
+    {id:104,company:'Anduril Industries',area:'Aerospace/Defense',role:'Mission Operation Engineer',veteran:'No',status:'Planned',deadline:'TBD',location:'Costa Mesa, CA / Boston, MA',event:'TBD',chats:'TBD',practitioners:'TBD',link:'https://www.anduril.com/careers',notes:'TBD'},
+    {id:105,company:'RTX Corporation',area:'Aerospace/Defense',role:'Leadership Development Program',veteran:'No',status:'Planned',deadline:'TBD',location:'Arlington, VA / Hartford, CT',event:'TBD',chats:'TBD',practitioners:'TBD',link:'https://careers.rtx.com/global/en/leadership-development-programs',notes:'TBD'},
+    {id:106,company:'BlackRock',area:'Financial Services',role:'U.S. Veterans Transition Program',veteran:'Yes',status:'Planned',deadline:'TBD',location:'New York, NY / Atlanta, GA',event:'TBD',chats:'TBD',practitioners:'TBD',link:'https://careers.blackrock.com/veterans-programs',notes:'TBD'},
+    {id:107,company:'Lockheed Martin',area:'Aerospace/Defense',role:'Finance Leadership Development Program',veteran:'No',status:'Planned',deadline:'TBD',location:'Bethesda, MD',event:'TBD',chats:'TBD',practitioners:'TBD',link:'https://www.lockheedmartin.com/en-us/careers/why-lm/leadership-development.html',notes:'TBD'},
+    {id:108,company:'Bank of America',area:'Financial Services',role:'Veteran Associate Program',veteran:'Yes',status:'Planned',deadline:'TBD',location:'New York, NY',event:'TBD',chats:'TBD',practitioners:'TBD',link:'https://careers.bankofamerica.com/en-us/opportunity-inclusion/veterans',notes:'TBD'},
+    {id:109,company:'Citibank',area:'Financial Services',role:'Military Officer Leadership Program',veteran:'Yes',status:'Planned',deadline:'TBD',location:'Tampa, FL / New York, NY',event:'TBD',chats:'TBD',practitioners:'TBD',link:'https://www.citigroup.com',notes:'TBD'},
+    {id:110,company:'BAE Systems',area:'Aerospace/Defense',role:'Leadership Development Program',veteran:'No',status:'Planned',deadline:'TBD',location:'Falls Church, VA / Nashua, NH',event:'TBD',chats:'TBD',practitioners:'TBD',link:'https://jobs.baesystems.com/global/en/ldp',notes:'TBD'},
+    {id:111,company:'Dell Technologies',area:'Computer Hardware',role:'Finance Development Program',veteran:'No',status:'Planned',deadline:'TBD',location:'Round Rock, TX / Hopkinton, MA',event:'TBD',chats:'TBD',practitioners:'TBD',link:'https://iawmqy.fa.ocs.oraclecloud.com',notes:'TBD'},
+  ],
+  rejections:[
+    {id:201,company:'Johnson & Johnson (Marketing LDP)',area:'Strategic Marketing, Consumer Insights, Digital & Innovation',status:'Rejected',deadline:'Unknown',location:'Raynham, MA',event:'',strategy:'1x Practitioner Chat (Cold), Veteran Conference',chatsReq:'1',chatsDone:'1',practitioners:'Bob Reed',link:'https://www.careers.jnj.com',notes:''},
+    {id:202,company:'Symbotic (Executive Projects)',area:'Consulting – Strategic/Management',status:'Rejected',deadline:'Unknown',location:'Wilmington, MA',event:'',strategy:'',chatsReq:'',chatsDone:'',practitioners:'',link:'https://symbotic.wd1.myworkdayjobs.com',notes:''},
+    {id:203,company:'Corning Incorporated (Management LDP)',area:'Mobile Consumer Electronics, Automotive, Life Sciences',status:'Rejected',deadline:'2025-12-09',location:'Tewksbury, MA',event:'2025-10-02',strategy:'1x Practitioner Chat (Cold)',chatsReq:'1',chatsDone:'1',practitioners:'Tom Conners',link:'Closed',notes:''},
+    {id:204,company:'Formlabs (Global Operations)',area:'Management, Marketing – Business Development',status:'Rejected',deadline:'Unknown',location:'Somerville, MA',event:'',strategy:'',chatsReq:'',chatsDone:'',practitioners:'',link:'https://careers.formlabs.com/job/7452885',notes:''},
+    {id:205,company:'JP Morgan Chase (Fin/Strategy LDP)',area:'Data & Analytics, Product, Strategy & Strategic Initiatives',status:'Rejected',deadline:'2026-01-12',location:'New York City, NY',event:'2025-10-16',strategy:'1x Practitioner Chat (JTS), 1x Cold',chatsReq:'2',chatsDone:'2',practitioners:'Kerry Von Malderghem, Keith Schemel',link:'https://jpmc.fa.oraclecloud.com',notes:''},
+    {id:206,company:'Coinbase (Prod. Marketing)',area:'Executive Leadership & General Management',status:'Rejected',deadline:'Unknown',location:'New York City, NY',event:'2025-10-21',strategy:'',chatsReq:'',chatsDone:'',practitioners:'',link:'https://www.gem.com',notes:''},
+    {id:207,company:'Fidelity Investments (Finance LDP)',area:'Finance – Asset Management, Private Wealth',status:'Rejected',deadline:'Unknown',location:'Boston, MA',event:'',strategy:'Veteran Conference',chatsReq:'',chatsDone:'',practitioners:'',link:'Closed',notes:''},
+    {id:208,company:'Goldman Sachs (Wealth Mgmt)',area:'Finance – Asset Management, Private Wealth',status:'Rejected',deadline:'Unknown',location:'Boston, MA',event:'',strategy:'',chatsReq:'',chatsDone:'',practitioners:'',link:'https://higher.gs.com/roles/152291',notes:''},
+    {id:209,company:'Bank of America ML (Strategy LDP)',area:'Financial Services, Consulting – Strategic/Management',status:'Rejected',deadline:'Unknown',location:'Boston, MA',event:'',strategy:'Veteran Conference',chatsReq:'',chatsDone:'',practitioners:'',link:'https://careers.bankofamerica.com',notes:''},
+    {id:210,company:'General Dynamics (Business Ops)',area:'Government Public Sector and Military, GDIT',status:'Rejected',deadline:'Unknown',location:'St. Petersburg, FL',event:'',strategy:'',chatsReq:'',chatsDone:'',practitioners:'',link:'https://careers-gd-ots.icims.com',notes:''},
+    {id:211,company:'Medtronic (Management LDP)',area:'Management, Marketing – Business Development',status:'Rejected',deadline:'2026-01-05',location:'Boston, MA',event:'2025-12-22',strategy:'',chatsReq:'',chatsDone:'',practitioners:'',link:'https://medtronic.wd1.myworkdayjobs.com',notes:''},
+    {id:212,company:'Republic Services (Management LDP)',area:'Management, Marketing – Business Development',status:'Rejected',deadline:'Unknown',location:'Boston, MA',event:'',strategy:'',chatsReq:'',chatsDone:'',practitioners:'',link:'https://jobs.republicservices.com',notes:''},
+    {id:213,company:'Raytheon Technology Corp. (Business Mgmt)',area:'Automotive/Transportation Manufacturing, Government',status:'Rejected',deadline:'Unknown',location:'Hartford, CT',event:'',strategy:'',chatsReq:'',chatsDone:'',practitioners:'',link:'https://globalhr.wd5.myworkdayjobs.com',notes:''},
+    {id:214,company:'Biogen (Management LDP)',area:'Management, Marketing – Business Development',status:'Rejected',deadline:'2026-01-20',location:'Cambridge, MA',event:'',strategy:'',chatsReq:'',chatsDone:'',practitioners:'',link:'https://biibhr.wd3.myworkdayjobs.com',notes:''},
+    {id:215,company:'JP Morgan Chase (Wealth Mgmt)',area:'Finance – Asset Management, Private Wealth',status:'Rejected',deadline:'2026-01-01',location:'Boston, MA',event:'',strategy:'1x Practitioner Chat (Cold)',chatsReq:'1',chatsDone:'1',practitioners:'Seamus Connelly',link:'https://jpmc.fa.oraclecloud.com',notes:''},
+    {id:216,company:'Citibank (Fin/Strategy LDP)',area:'Data & Analytics, Product, Strategy',status:'Rejected',deadline:'2026-01-16',location:'New York City, NY',event:'2025-10-22',strategy:'',chatsReq:'',chatsDone:'',practitioners:'',link:'https://jobs.citi.com',notes:''},
+    {id:217,company:'Formlabs (Go-to-market)',area:'Management, Marketing – Business Development',status:'Rejected',deadline:'TBD',location:'Somerville, MA',event:'',strategy:'',chatsReq:'',chatsDone:'',practitioners:'',link:'https://careers.formlabs.com/job/7574757',notes:''},
+    {id:218,company:'Pepsico (Strategic Finance)',area:'Data & Analytics, Product, Strategy',status:'Rejected',deadline:'TBD',location:'Purchase, NY',event:'',strategy:'',chatsReq:'',chatsDone:'',practitioners:'',link:'https://uscampus-pepsico.icims.com',notes:''},
+    {id:219,company:'Vertex Pharma (LDP)',area:'Management, Marketing – Business Development',status:'Rejected',deadline:'TBD',location:'Boston, MA',event:'',strategy:'',chatsReq:'',chatsDone:'',practitioners:'',link:'',notes:''},
+    {id:220,company:'Skydio (Sales)',area:'Government Public Sector and Military',status:'Rejected',deadline:'TBD',location:'San Mateo, CA',event:'',strategy:'',chatsReq:'',chatsDone:'',practitioners:'',link:'https://www.skydio.com/jobs',notes:''},
+    {id:221,company:'Morgan Stanley (Wealth Mgmt)',area:'Data & Analytics, Product, Strategy',status:'Ghosted',deadline:'2025-11-25',location:'Rochester, NY',event:'',strategy:'',chatsReq:'',chatsDone:'',practitioners:'',link:'https://ms.wd5.myworkdayjobs.com',notes:''},
+    {id:222,company:'UBS (Wealth Mgmt)',area:'Data & Analytics, Product, Strategy',status:'Ghosted',deadline:'2026-01-10',location:'New York City, NY',event:'',strategy:'',chatsReq:'',chatsDone:'',practitioners:'',link:'https://jobs.ubs.com',notes:''},
+    {id:223,company:'CIA (Operations)',area:'Government Public Sector, Information Technology',status:'Ghosted',deadline:'2026-01-10',location:'Washington, D.C.',event:'',strategy:'',chatsReq:'',chatsDone:'',practitioners:'',link:'',notes:''},
+    {id:224,company:'TD Bank Group (Marketing)',area:'Data & Analytics, Product, Strategy',status:'Ghosted',deadline:'2026-01-10',location:'Boston, MA',event:'',strategy:'',chatsReq:'',chatsDone:'',practitioners:'',link:'https://td.wd3.myworkdayjobs.com',notes:''},
+  ],
+  coffee:[
+    {id:301,name:'Jessica Chen',date:'2025-09-16',notes:'Need to establish a better connection; tailor questions to firm specifics.',company:'PwC',fn:'Financial',sent:true,respPending:false,confirmed:false,complete:true,thankYou:true},
+    {id:302,name:'Jesh Enerio',date:'2025-09-18',notes:'Good small talk; should have done pitch; mirror body language/project confidence.',company:'Kearney',fn:'Food & Beverage, Operations, Supply Chain',sent:true,respPending:false,confirmed:false,complete:true,thankYou:false},
+    {id:303,name:'Eshan Varma',date:'2025-09-19',notes:'Take control; short pitch; good firm-specific questions; be relaxed.',company:'Accenture Strategy',fn:'Private Equity, Enterprise Transformation, Healthcare',sent:true,respPending:false,confirmed:false,complete:true,thankYou:false},
+    {id:304,name:'Ryan Lohin',date:'2025-09-19',notes:"Be specific with what you've done; bridge into MBA; why Cornell if alumni.",company:'Deloitte',fn:'Private Equity',sent:true,respPending:false,confirmed:false,complete:true,thankYou:false},
+    {id:305,name:'Gaurav Sharma',date:'2025-09-19',notes:'Need to work on pitch and flow of chat.',company:'Bain',fn:'Private Equity, Due Diligence, Healthcare',sent:true,respPending:false,confirmed:false,complete:true,thankYou:false},
+    {id:306,name:'Jessica Lui',date:'2025-09-22',notes:'Leverage Johnson alumni; good follow-up questions.',company:'PwC',fn:'Risk Advisory',sent:true,respPending:false,confirmed:false,complete:true,thankYou:false},
+    {id:307,name:'Colby Snyder',date:'2025-09-22',notes:"Do intro at beginning; don't end too early.",company:'McKinsey',fn:'Alternative Investments, Agriculture',sent:true,respPending:false,confirmed:false,complete:true,thankYou:false},
+    {id:308,name:'Zara Rahman',date:'2025-09-23',notes:'Engaging; need to know more about your work; need better reason for consulting.',company:'LEK',fn:'Industrial, DD',sent:true,respPending:false,confirmed:false,complete:true,thankYou:false},
+    {id:309,name:'Vikram Samson',date:'2025-09-25',notes:'Good questions; make pitch longer; touch on last job.',company:'McKinsey',fn:'Consulting, Tech, Healthcare, Manufacturing',sent:true,respPending:false,confirmed:false,complete:true,thankYou:false},
+    {id:310,name:'Jake Potoczak',date:'2025-09-26',notes:'Change pitch format; tell the story not on resume.',company:'EY-Parthenon',fn:'PE Work, digital infrastructure & software strategy',sent:true,respPending:false,confirmed:false,complete:true,thankYou:false},
+    {id:311,name:'Connor Maguire',date:'2025-09-26',notes:'Virtual interview before corporate briefing; why commercial banking.',company:'JPMC',fn:'CAP, Strategy/Finance',sent:true,respPending:false,confirmed:false,complete:true,thankYou:false},
+    {id:312,name:'Cade Ingleson',date:'2025-09-30',notes:'Trek trip; multiple locations; lot of veterans.',company:'Corning',fn:'LEAD, Sustainability, Strategy',sent:true,respPending:false,confirmed:false,complete:true,thankYou:false},
+  ]
+};
+
+let LD = (()=>{ try{const s=localStorage.getItem(LK); return s?JSON.parse(s):JSON.parse(JSON.stringify(LDEFS));} catch{return JSON.parse(JSON.stringify(LDEFS));} })();
+let lTab = 'active';
+let lSort = {active:{c:null,d:1},planned:{c:null,d:1},rejections:{c:null,d:1},coffee:{c:null,d:1}};
+
+function lSave(){ localStorage.setItem(LK, JSON.stringify(LD)); }
+function nid(){ return Date.now(); }
+
+function lampTab(tab, ev){
+  lTab = tab;
+  document.querySelectorAll('.lamp-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.slide-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+tab).classList.add('active');
+  ev.currentTarget.classList.add('active');
+  lRenderAll();
+}
+
+function lSummary(){
+  document.getElementById('sum-total').textContent = LD.active.length+LD.planned.length+LD.rejections.length;
+  document.getElementById('sum-submitted').textContent = LD.active.filter(r=>r.status==='Submitted').length;
+  document.getElementById('sum-planned').textContent = LD.planned.length;
+  document.getElementById('sum-rejected').textContent = LD.rejections.length;
+  document.getElementById('sum-chats').textContent = LD.coffee.length;
+  document.getElementById('cnt-active').textContent = LD.active.length;
+  document.getElementById('cnt-planned').textContent = LD.planned.length;
+  document.getElementById('cnt-rejections').textContent = LD.rejections.length;
+  document.getElementById('cnt-coffee').textContent = LD.coffee.length;
+}
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function badge(status){
+  const s=(status||'TBD').trim();
+  const cls='badge b-'+s.charAt(0).toUpperCase()+s.slice(1).toLowerCase().replace(/\s/g,'');
+  return `<span class="${cls}">${s}</span>`;
+}
+
+function sSel(cur, tab, id, field){
+  const opts={active:['Submitted','Active','Offer'],planned:['Planned','Active','Submitted'],rejections:['Rejected','Ghosted'],coffee:[]}[tab]||[];
+  const s=(cur||'').trim();
+  const cls='status-sel badge b-'+s.charAt(0).toUpperCase()+s.slice(1).toLowerCase().replace(/\s/g,'');
+  return `<select class="${cls}" onchange="lUpd('${tab}',${id},'${field}',this.value);sSty(this)">${opts.map(o=>`<option ${o===s?'selected':''} value="${o}">${o}</option>`).join('')}</select>`;
+}
+function sSty(el){
+  const s=(el.value||'').trim();
+  el.className='status-sel badge b-'+s.charAt(0).toUpperCase()+s.slice(1).toLowerCase().replace(/\s/g,'');
+}
+
+function lUpd(tab,id,field,val){
+  const r=LD[tab].find(x=>x.id===id);
+  if(r){r[field]=val; lSave(); lSummary();}
+}
+
+function ec(tab,id,field,val,cls=''){
+  return `<span class="${cls}" onclick="lEdit(this,'${tab}',${id},'${field}')" title="Click to edit">${esc(val)}</span>`;
+}
+
+function lEdit(el,tab,id,field){
+  el.contentEditable='true';
+  el.focus();
+  el.addEventListener('blur',()=>{ lUpd(tab,id,field,el.textContent.trim()); el.removeAttribute('contenteditable'); },{once:true});
+  el.addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDefault();el.blur();} });
+}
+
+function lnk(url){
+  if(!url||url==='Closed'||url==='TBD') return `<span style="color:var(--gray3);font-size:10px">${esc(url||'—')}</span>`;
+  return `<a class="link-out" href="${url}" target="_blank" rel="noopener">&#8599;</a>`;
+}
+
+function lDel(tab,id){ LD[tab]=LD[tab].filter(r=>r.id!==id); lSave(); lRenderAll(); }
+
+function srt(tab,col){
+  if(lSort[tab].c===col) lSort[tab].d*=-1; else {lSort[tab].c=col;lSort[tab].d=1;}
+  lRenderAll();
+}
+function lSorted(arr,tab){
+  const {c,d}=lSort[tab]; if(!c) return arr;
+  return [...arr].sort((a,b)=>{const av=(a[c]||'').toLowerCase(),bv=(b[c]||'').toLowerCase(); return av<bv?-d:av>bv?d:0;});
+}
+function lFilt(pid){
+  const tb=document.querySelector(`#panel-${pid} .toolbar`);
+  return {q:tb?.querySelector('input')?.value?.toLowerCase()||'', st:tb?.querySelector('select')?.value||''};
+}
+function lMatch(r,q,fs){ return !q||fs.some(f=>(r[f]||'').toLowerCase().includes(q)); }
+
+function rActive(){
+  const {q,st}=lFilt('active');
+  const rows=lSorted(LD.active,'active').filter(r=>lMatch(r,q,['company','area','role','location','notes','practitioners'])&&(!st||r.status===st));
+  const tb=document.getElementById('tbody-active');
+  document.getElementById('rc-active').textContent=rows.length+' rows';
+  if(!rows.length){tb.innerHTML='<tr class="empty-row"><td colspan="12">No entries found</td></tr>';return;}
+  tb.innerHTML=rows.map(r=>`<tr>
+    <td class="c-company">${ec('active',r.id,'company',r.company,'c-company')}</td>
+    <td class="c-area">${ec('active',r.id,'area',r.area)}</td>
+    <td class="c-role">${ec('active',r.id,'role',r.role)}</td>
+    <td>${sSel(r.status,'active',r.id,'status')}</td>
+    <td class="c-date">${ec('active',r.id,'deadline',r.deadline)}</td>
+    <td class="c-loc">${ec('active',r.id,'location',r.location)}</td>
+    <td class="c-date">${ec('active',r.id,'event',r.event)}</td>
+    <td class="c-chats">${ec('active',r.id,'chats',r.chats)}</td>
+    <td>${ec('active',r.id,'practitioners',r.practitioners)}</td>
+    <td class="c-notes">${ec('active',r.id,'notes',r.notes)}</td>
+    <td class="c-link">${lnk(r.link)}</td>
+    <td class="c-act"><button class="del-btn" onclick="lDel('active',${r.id})">&#215;</button></td>
+  </tr>`).join('');
+}
+
+function rPlanned(){
+  const {q}=lFilt('planned');
+  const rows=lSorted(LD.planned,'planned').filter(r=>lMatch(r,q,['company','area','role','location','notes','practitioners']));
+  const tb=document.getElementById('tbody-planned');
+  document.getElementById('rc-planned').textContent=rows.length+' rows';
+  if(!rows.length){tb.innerHTML='<tr class="empty-row"><td colspan="13">No entries found</td></tr>';return;}
+  tb.innerHTML=rows.map(r=>`<tr>
+    <td class="c-company">${ec('planned',r.id,'company',r.company,'c-company')}</td>
+    <td class="c-area">${ec('planned',r.id,'area',r.area)}</td>
+    <td class="c-role">${ec('planned',r.id,'role',r.role)}</td>
+    <td>${r.veteran==='Yes'?'<span class="vet-tag">VET</span>':'<span style="color:var(--gray2)">—</span>'}</td>
+    <td>${sSel(r.status,'planned',r.id,'status')}</td>
+    <td class="c-date">${ec('planned',r.id,'deadline',r.deadline)}</td>
+    <td class="c-loc">${ec('planned',r.id,'location',r.location)}</td>
+    <td class="c-date">${ec('planned',r.id,'event',r.event)}</td>
+    <td class="c-chats">${ec('planned',r.id,'chats',r.chats)}</td>
+    <td>${ec('planned',r.id,'practitioners',r.practitioners)}</td>
+    <td class="c-link">${lnk(r.link)}</td>
+    <td class="c-notes">${ec('planned',r.id,'notes',r.notes)}</td>
+    <td class="c-act"><button class="del-btn" onclick="lDel('planned',${r.id})">&#215;</button></td>
+  </tr>`).join('');
+}
+
+function rRejections(){
+  const {q,st}=lFilt('rejections');
+  const rows=lSorted(LD.rejections,'rejections').filter(r=>lMatch(r,q,['company','area','location','practitioners','strategy'])&&(!st||r.status===st));
+  const tb=document.getElementById('tbody-rejections');
+  document.getElementById('rc-rejections').textContent=rows.length+' rows';
+  if(!rows.length){tb.innerHTML='<tr class="empty-row"><td colspan="13">No entries found</td></tr>';return;}
+  tb.innerHTML=rows.map(r=>`<tr>
+    <td class="c-company" style="font-weight:600;color:var(--navy)">${esc(r.company)}</td>
+    <td class="c-area" style="max-width:200px">${ec('rejections',r.id,'area',r.area)}</td>
+    <td>${sSel(r.status,'rejections',r.id,'status')}</td>
+    <td class="c-date">${ec('rejections',r.id,'deadline',r.deadline)}</td>
+    <td class="c-loc">${ec('rejections',r.id,'location',r.location)}</td>
+    <td class="c-date">${ec('rejections',r.id,'event',r.event)}</td>
+    <td style="max-width:190px;font-size:11px">${ec('rejections',r.id,'strategy',r.strategy)}</td>
+    <td class="c-chats">${ec('rejections',r.id,'chatsReq',r.chatsReq)}</td>
+    <td class="c-chats">${ec('rejections',r.id,'chatsDone',r.chatsDone)}</td>
+    <td>${ec('rejections',r.id,'practitioners',r.practitioners)}</td>
+    <td class="c-link">${lnk(r.link)}</td>
+    <td class="c-notes">${ec('rejections',r.id,'notes',r.notes)}</td>
+    <td class="c-act"><button class="del-btn" onclick="lDel('rejections',${r.id})">&#215;</button></td>
+  </tr>`).join('');
+}
+
+function rCoffee(){
+  const {q}=lFilt('coffee');
+  const rows=lSorted(LD.coffee,'coffee').filter(r=>lMatch(r,q,['name','company','fn','notes']));
+  const tb=document.getElementById('tbody-coffee');
+  document.getElementById('rc-coffee').textContent=rows.length+' rows';
+  if(!rows.length){tb.innerHTML='<tr class="empty-row"><td colspan="10">No coffee chats yet</td></tr>';return;}
+  tb.innerHTML=rows.map(r=>`<tr>
+    <td style="font-weight:600;color:var(--navy)">${esc(r.name)}<br><span style="font-size:10px;color:var(--text3);font-family:'IBM Plex Mono',monospace;font-weight:400">${esc(r.date||'')}</span></td>
+    <td class="c-notes" style="max-width:230px">${ec('coffee',r.id,'notes',r.notes)}</td>
+    <td>${ec('coffee',r.id,'company',r.company)}</td>
+    <td style="font-size:11px;color:var(--text2)">${ec('coffee',r.id,'fn',r.fn)}</td>
+    <td class="check-cell"><input type="checkbox" class="ck" ${r.sent?'checked':''} onchange="lUpd('coffee',${r.id},'sent',this.checked)"></td>
+    <td class="check-cell"><input type="checkbox" class="ck" ${r.respPending?'checked':''} onchange="lUpd('coffee',${r.id},'respPending',this.checked)"></td>
+    <td class="check-cell"><input type="checkbox" class="ck" ${r.confirmed?'checked':''} onchange="lUpd('coffee',${r.id},'confirmed',this.checked)"></td>
+    <td class="check-cell"><input type="checkbox" class="ck" ${r.complete?'checked':''} onchange="lUpd('coffee',${r.id},'complete',this.checked)"></td>
+    <td class="check-cell"><input type="checkbox" class="ck" ${r.thankYou?'checked':''} onchange="lUpd('coffee',${r.id},'thankYou',this.checked)"></td>
+    <td class="c-act"><button class="del-btn" onclick="lDel('coffee',${r.id})">&#215;</button></td>
+  </tr>`).join('');
+}
+
+function lRenderAll(){ rActive(); rPlanned(); rRejections(); rCoffee(); lSummary(); }
+
+/* Modal */
+function openModal(){
+  document.getElementById('modal-ttl').textContent='Add — '+lTab.charAt(0).toUpperCase()+lTab.slice(1);
+  document.getElementById('modal-body').innerHTML=buildForm(lTab);
+  document.getElementById('modal-ov').classList.add('open');
+}
+function closeModal(e){
+  if(e&&e.target!==document.getElementById('modal-ov')) return;
+  document.getElementById('modal-ov').classList.remove('open');
+}
+function gv(id){ const el=document.getElementById(id); return el?el.value.trim():''; }
+
+function buildForm(tab){
+  if(tab==='active') return `<div class="mg2">
+    <div class="fg full"><div class="fl">Company</div><input class="fi" id="f-company" placeholder="e.g. Lockheed Martin"></div>
+    <div class="fg"><div class="fl">Area of Focus</div><input class="fi" id="f-area"></div>
+    <div class="fg"><div class="fl">Role</div><input class="fi" id="f-role"></div>
+    <div class="fg"><div class="fl">Status</div><select class="fs" id="f-status"><option>Submitted</option><option>Active</option><option>Offer</option></select></div>
+    <div class="fg"><div class="fl">Deadline</div><input class="fi" id="f-deadline" placeholder="TBD or YYYY-MM-DD"></div>
+    <div class="fg"><div class="fl">Location</div><input class="fi" id="f-location" placeholder="Boston, MA"></div>
+    <div class="fg"><div class="fl">Corp Event Date</div><input class="fi" id="f-event"></div>
+    <div class="fg"><div class="fl">Coffee Chats</div><input class="fi" id="f-chats"></div>
+    <div class="fg full"><div class="fl">Practitioners</div><input class="fi" id="f-practitioners"></div>
+    <div class="fg full"><div class="fl">App Link</div><input class="fi" id="f-link" placeholder="https://..."></div>
+    <div class="fg full"><div class="fl">Notes</div><textarea class="fta" id="f-notes"></textarea></div>
+  </div>`;
+  if(tab==='planned') return `<div class="mg2">
+    <div class="fg full"><div class="fl">Company</div><input class="fi" id="f-company"></div>
+    <div class="fg"><div class="fl">Area of Focus</div><input class="fi" id="f-area"></div>
+    <div class="fg"><div class="fl">Role</div><input class="fi" id="f-role"></div>
+    <div class="fg"><div class="fl">Veteran Exclusive</div><select class="fs" id="f-veteran"><option>Yes</option><option>No</option></select></div>
+    <div class="fg"><div class="fl">Status</div><select class="fs" id="f-status"><option>Planned</option><option>Active</option><option>Submitted</option></select></div>
+    <div class="fg"><div class="fl">Deadline</div><input class="fi" id="f-deadline"></div>
+    <div class="fg full"><div class="fl">Location</div><input class="fi" id="f-location"></div>
+    <div class="fg"><div class="fl">Corp Event Date</div><input class="fi" id="f-event"></div>
+    <div class="fg"><div class="fl">Coffee Chats</div><input class="fi" id="f-chats"></div>
+    <div class="fg full"><div class="fl">Practitioners</div><input class="fi" id="f-practitioners"></div>
+    <div class="fg full"><div class="fl">Job Link</div><input class="fi" id="f-link"></div>
+    <div class="fg full"><div class="fl">Notes</div><textarea class="fta" id="f-notes"></textarea></div>
+  </div>`;
+  if(tab==='rejections') return `<div class="mg2">
+    <div class="fg full"><div class="fl">Firm / Company</div><input class="fi" id="f-company"></div>
+    <div class="fg full"><div class="fl">Area of Focus</div><textarea class="fta" id="f-area" style="min-height:48px"></textarea></div>
+    <div class="fg"><div class="fl">Status</div><select class="fs" id="f-status"><option>Rejected</option><option>Ghosted</option></select></div>
+    <div class="fg"><div class="fl">Deadline</div><input class="fi" id="f-deadline"></div>
+    <div class="fg"><div class="fl">Location</div><input class="fi" id="f-location"></div>
+    <div class="fg"><div class="fl">Corp Event Date</div><input class="fi" id="f-event"></div>
+    <div class="fg full"><div class="fl">Engagement Strategy</div><input class="fi" id="f-strategy"></div>
+    <div class="fg"><div class="fl">Chats Requested</div><input class="fi" id="f-chatsReq"></div>
+    <div class="fg"><div class="fl">Chats Completed</div><input class="fi" id="f-chatsDone"></div>
+    <div class="fg full"><div class="fl">Practitioners</div><input class="fi" id="f-practitioners"></div>
+    <div class="fg full"><div class="fl">App Link</div><input class="fi" id="f-link"></div>
+    <div class="fg full"><div class="fl">Notes</div><textarea class="fta" id="f-notes"></textarea></div>
+  </div>`;
+  if(tab==='coffee') return `<div class="mg2">
+    <div class="fg"><div class="fl">Name</div><input class="fi" id="f-name"></div>
+    <div class="fg"><div class="fl">Date</div><input class="fi" id="f-date" type="date"></div>
+    <div class="fg"><div class="fl">Company</div><input class="fi" id="f-company"></div>
+    <div class="fg"><div class="fl">Function</div><input class="fi" id="f-fn"></div>
+    <div class="fg full"><div class="fl">Notes / Feedback</div><textarea class="fta" id="f-notes"></textarea></div>
+  </div>`;
+}
+
+function saveModal(){
+  const tab=lTab;
+  let nr={id:nid()};
+  if(tab==='active'){
+    if(!gv('f-company')){toast('Company name required');return;}
+    nr={...nr,company:gv('f-company'),area:gv('f-area'),role:gv('f-role'),status:gv('f-status'),deadline:gv('f-deadline'),location:gv('f-location'),event:gv('f-event'),chats:gv('f-chats'),practitioners:gv('f-practitioners'),link:gv('f-link'),notes:gv('f-notes')};
+  } else if(tab==='planned'){
+    if(!gv('f-company')){toast('Company name required');return;}
+    nr={...nr,company:gv('f-company'),area:gv('f-area'),role:gv('f-role'),veteran:gv('f-veteran'),status:gv('f-status'),deadline:gv('f-deadline'),location:gv('f-location'),event:gv('f-event'),chats:gv('f-chats'),practitioners:gv('f-practitioners'),link:gv('f-link'),notes:gv('f-notes')};
+  } else if(tab==='rejections'){
+    if(!gv('f-company')){toast('Company name required');return;}
+    nr={...nr,company:gv('f-company'),area:gv('f-area'),status:gv('f-status'),deadline:gv('f-deadline'),location:gv('f-location'),event:gv('f-event'),strategy:gv('f-strategy'),chatsReq:gv('f-chatsReq'),chatsDone:gv('f-chatsDone'),practitioners:gv('f-practitioners'),link:gv('f-link'),notes:gv('f-notes')};
+  } else if(tab==='coffee'){
+    if(!gv('f-name')){toast('Name required');return;}
+    nr={...nr,name:gv('f-name'),date:gv('f-date'),company:gv('f-company'),fn:gv('f-fn'),notes:gv('f-notes'),sent:false,respPending:false,confirmed:false,complete:false,thankYou:false};
+  }
+  LD[tab].push(nr); lSave();
+  document.getElementById('modal-ov').classList.remove('open');
+  lRenderAll(); toast('Entry added');
+}
+
+/* ════════════════════════
+   DEGREE PLANNER
+════════════════════════ */
+const DK='degree-planner-courses';
+const DGP={'A':4.0,'A-':3.7,'B+':3.3,'B':3.0,'B-':2.7,'C+':2.3,'C':2.0,'C-':1.7,'D+':1.3,'D':1.0,'F':0.0,'IP':null};
+let DC=(()=>{try{const s=localStorage.getItem(DK); return s?JSON.parse(s):[];}catch{return [];}})();
+
+function dpSave(){localStorage.setItem(DK,JSON.stringify(DC));}
+
+function dpGpa(list){
+  const g=list.filter(c=>c.grade!=='IP'&&DGP[c.grade]!==null);
+  if(!g.length) return null;
+  const pts=g.reduce((s,c)=>s+DGP[c.grade]*c.credits,0);
+  const cr=g.reduce((s,c)=>s+c.credits,0);
+  return cr?(pts/cr).toFixed(2):null;
+}
+
+function dpGcls(g){
+  if(!g||g==='IP') return 'gIP';
+  const f=g[0];
+  return f==='A'?'gA':f==='B'?'gB':f==='C'?'gC':f==='D'?'gD':'gF';
+}
+
+function dpAdd(){
+  const name=document.getElementById('dp-name').value.trim();
+  const credits=parseFloat(document.getElementById('dp-credits').value);
+  const year=document.getElementById('dp-year').value;
+  const sem=document.getElementById('dp-sem').value;
+  const grade=document.getElementById('dp-grade').value;
+  if(!name){document.getElementById('dp-name').focus();return;}
+  if(!credits||credits<0.5){document.getElementById('dp-credits').focus();return;}
+  DC.push({id:Date.now(),name,credits,semester:`${year} — ${sem}`,grade});
+  dpSave(); dpRender();
+  document.getElementById('dp-name').value='';
+  document.getElementById('dp-credits').value='';
+  document.getElementById('dp-grade').value='IP';
+}
+
+function dpDel(id){DC=DC.filter(c=>c.id!==id);dpSave();dpRender();}
+
+function dpRender(){
+  const done=DC.filter(c=>c.grade!=='IP');
+  const cr=done.reduce((s,c)=>s+c.credits,0);
+  const gpa=dpGpa(DC);
+  document.getElementById('dp-gpa').textContent=gpa||'—';
+  document.getElementById('dp-credits').textContent=cr;
+  document.getElementById('dp-courses').textContent=DC.length;
+  document.getElementById('dp-remaining').textContent=Math.max(0,120-cr);
+  document.getElementById('dp-gpa-bar').style.width=((parseFloat(gpa)||0)/4*100)+'%';
+  if(DC.length) document.getElementById('dp-date').textContent='Updated '+new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+
+  const panel=document.getElementById('dp-courses-panel');
+  if(!DC.length){panel.innerHTML='<div class="dp-empty">No courses yet — add your first course</div>';return;}
+
+  const grp={},ord=[];
+  DC.forEach(c=>{if(!grp[c.semester]){grp[c.semester]=[];ord.push(c.semester);}grp[c.semester].push(c);});
+  ord.sort();
+
+  panel.innerHTML=ord.map(sem=>{
+    const sc=grp[sem],sg=dpGpa(sc),scr=sc.filter(c=>c.grade!=='IP').reduce((s,c)=>s+c.credits,0);
+    return `<div class="dp-sem-block">
+      <div class="dp-sem-hd">
+        <span class="dp-sem-name">${sem}</span>
+        <span class="dp-sem-stats">${scr} cr &nbsp;·&nbsp; GPA ${sg||'—'}</span>
+      </div>
+      <div class="dp-col-hd"><span>Course</span><span>Credits</span><span>Status</span><span>Grade</span><span></span></div>
+      ${sc.map(c=>`<div class="dp-course-row">
+        <span class="dp-cn">${esc(c.name)}</span>
+        <span class="dp-cr">${c.credits}</span>
+        <span class="${c.grade!=='IP'?'dp-status-done':'dp-status-ip'}">${c.grade!=='IP'?'Done':'Active'}</span>
+        <span class="dp-grade ${dpGcls(c.grade)}">${c.grade}</span>
+        <button class="dp-del" onclick="dpDel(${c.id})">&#215;</button>
+      </div>`).join('')}
+    </div>`;
+  }).join('');
+}
+
+document.getElementById('dp-name').addEventListener('keydown',e=>{if(e.key==='Enter')dpAdd();});
+
+/* ── INIT ── */
+lRenderAll();
+dpRender();
+</script>
+</body>
+</html>
