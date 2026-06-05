@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LAMP List</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0b0d;
+  --surface: #111318;
+  --surface2: #181c24;
+  --border: #1e2330;
+  --border2: #2a3045;
+  --accent: #e8ff5a;
+  --accent2: #5af0d4;
+  --accent3: #ff6b6b;
+  --accent4: #c084fc;
+  --text: #e8ecf4;
+  --muted: #4a5568;
+  --muted2: #6b7280;
+
+  --status-submitted: #5af0d4;
+  --status-planned: #c084fc;
+  --status-rejected: #ff6b6b;
+  --status-ghosted: #f97316;
+  --status-active: #e8ff5a;
+  --status-offer: #34d399;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Space Mono', monospace;
+  min-height: 100vh;
+}
+
+/* ── TOP NAV ── */
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.2rem 2.5rem;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(10, 11, 13, 0.92);
+  backdrop-filter: blur(12px);
+}
+
+.nav-brand {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.3rem;
+  letter-spacing: -0.5px;
+}
+.nav-brand span { color: var(--accent); }
+
+.nav-tabs {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.tab-btn {
+  background: none;
+  border: 1px solid transparent;
+  color: var(--muted2);
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  padding: 0.45rem 1rem;
+  cursor: pointer;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.tab-btn:hover { color: var(--text); border-color: var(--border2); }
+.tab-btn.active {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: rgba(232, 255, 90, 0.06);
+}
+
+.tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface2);
+  border-radius: 3px;
+  font-size: 0.6rem;
+  padding: 0 0.35rem;
+  min-width: 18px;
+  height: 16px;
+  margin-left: 6px;
+  color: var(--muted2);
+}
+.tab-btn.active .tab-count { background: rgba(232,255,90,0.15); color: var(--accent); }
+
+.nav-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #0a0b0d;
+  border: none;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.5rem 1.1rem;
+  cursor: pointer;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: opacity 0.2s, transform 0.1s;
+}
+.btn-primary:hover { opacity: 0.85; }
+.btn-primary:active { transform: scale(0.97); }
+
+/* ── SUMMARY BAR ── */
+.summary-bar {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  border-bottom: 1px solid var(--border);
+}
+
+.summary-stat {
+  padding: 1.4rem 2.5rem;
+  border-right: 1px solid var(--border);
+  position: relative;
+}
+.summary-stat:last-child { border-right: none; }
+
+.summary-stat::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 2px;
+}
+
+.summary-stat:nth-child(1)::before { background: var(--accent); }
+.summary-stat:nth-child(2)::before { background: var(--status-submitted); }
+.summary-stat:nth-child(3)::before { background: var(--status-planned); }
+.summary-stat:nth-child(4)::before { background: var(--status-rejected); }
+.summary-stat:nth-child(5)::before { background: var(--status-offer); }
+
+.summary-label {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--muted2);
+  margin-bottom: 0.4rem;
+}
+
+.summary-value {
+  font-family: 'Syne', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+/* ── PANEL WRAPPER ── */
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* ── TOOLBAR ── */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 2.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.search-wrap {
+  position: relative;
+  flex: 1;
+  max-width: 320px;
+}
+.search-wrap input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem;
+  padding: 0.5rem 0.8rem 0.5rem 2.2rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.search-wrap input:focus { border-color: var(--accent); }
+.search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 0.8rem;
+  pointer-events: none;
+}
+
+.filter-select {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  padding: 0.5rem 0.8rem;
+  outline: none;
+  cursor: pointer;
+}
+.filter-select:focus { border-color: var(--accent); }
+.filter-select option { background: var(--surface); }
+
+.toolbar-spacer { flex: 1; }
+
+.row-count {
+  font-size: 0.65rem;
+  color: var(--muted2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ── TABLE ── */
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+}
+
+thead th {
+  text-align: left;
+  padding: 0.7rem 1rem;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--muted2);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  background: var(--surface);
+  position: sticky;
+  top: 56px;
+}
+thead th:hover { color: var(--text); }
+thead th .sort-icon { margin-left: 4px; opacity: 0.4; }
+thead th.sorted .sort-icon { opacity: 1; color: var(--accent); }
+
+tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+  animation: rowIn 0.2s ease both;
+}
+tbody tr:hover { background: var(--surface); }
+
+@keyframes rowIn {
+  from { opacity: 0; transform: translateX(-4px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+tbody td {
+  padding: 0.75rem 1rem;
+  vertical-align: middle;
+  color: var(--text);
+}
+
+.cell-company {
+  font-weight: 700;
+  font-family: 'Syne', sans-serif;
+  font-size: 0.85rem;
+  min-width: 160px;
+}
+
+.cell-role { min-width: 160px; color: var(--muted2); }
+.cell-area { min-width: 130px; }
+.cell-location { min-width: 140px; color: var(--muted2); font-size: 0.7rem; }
+.cell-deadline { min-width: 110px; font-size: 0.72rem; }
+.cell-event { min-width: 110px; font-size: 0.72rem; }
+.cell-chats { min-width: 80px; text-align: center; }
+.cell-notes { min-width: 200px; }
+.cell-link { min-width: 60px; text-align: center; }
+.cell-actions { min-width: 70px; text-align: right; white-space: nowrap; }
+
+/* Status badges */
+.badge {
+  display: inline-block;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  padding: 0.25rem 0.55rem;
+  border: 1px solid;
+  white-space: nowrap;
+}
+
+.badge-Submitted  { color: var(--status-submitted); border-color: var(--status-submitted); background: rgba(90,240,212,0.08); }
+.badge-Planned    { color: var(--status-planned);   border-color: var(--status-planned);   background: rgba(192,132,252,0.08); }
+.badge-Rejected   { color: var(--status-rejected);  border-color: var(--status-rejected);  background: rgba(255,107,107,0.08); }
+.badge-Ghosted    { color: var(--status-ghosted);   border-color: var(--status-ghosted);   background: rgba(249,115,22,0.08); }
+.badge-Active     { color: var(--status-active);    border-color: var(--status-active);    background: rgba(232,255,90,0.08); }
+.badge-Offer      { color: var(--status-offer);     border-color: var(--status-offer);     background: rgba(52,211,153,0.08); }
+.badge-TBD        { color: var(--muted2);           border-color: var(--border2);          background: transparent; }
+
+/* Editable cells */
+[contenteditable=true] {
+  outline: none;
+  min-height: 1.2em;
+  border-radius: 2px;
+  transition: background 0.15s;
+  padding: 2px 4px;
+  margin: -2px -4px;
+}
+[contenteditable=true]:focus {
+  background: rgba(232,255,90,0.07);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+/* Status select inline */
+.status-select {
+  background: none;
+  border: none;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  padding: 0.2rem 0.4rem;
+  cursor: pointer;
+  outline: none;
+  border: 1px solid;
+  border-radius: 0;
+}
+
+/* Veteran tag */
+.vet-tag {
+  display: inline-block;
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 0.15rem 0.4rem;
+  border: 1px solid rgba(232,255,90,0.3);
+  color: rgba(232,255,90,0.7);
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+/* Action buttons */
+.action-btn {
+  background: none;
+  border: 1px solid var(--border2);
+  color: var(--muted2);
+  width: 26px; height: 26px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  margin-left: 3px;
+}
+.action-btn:hover { color: var(--text); border-color: var(--muted2); }
+.action-btn.del:hover { border-color: var(--accent3); color: var(--accent3); }
+
+.link-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent2);
+  font-size: 0.75rem;
+  text-decoration: none;
+  opacity: 0.8;
+  transition: opacity 0.15s;
+}
+.link-btn:hover { opacity: 1; }
+
+.empty-row td {
+  text-align: center;
+  padding: 4rem;
+  color: var(--muted);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border: none;
+}
+
+/* ── COFFEE CHAT SPECIFIC ── */
+.chat-check {
+  width: 16px; height: 16px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+/* ── MODAL ── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  padding: 2rem;
+  width: 560px;
+  max-width: 95vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modalIn 0.25s ease;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0); }
+}
+
+.modal-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: var(--accent);
+}
+
+.modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.modal-grid .full { grid-column: 1 / -1; }
+
+.field-group { display: flex; flex-direction: column; gap: 0.4rem; }
+.field-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 2px; color: var(--muted2); }
+
+.field-input, .field-select, .field-textarea {
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  font-family: 'Space Mono', monospace;
+  font-size: 0.78rem;
+  padding: 0.55rem 0.7rem;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+.field-input:focus, .field-select:focus, .field-textarea:focus { border-color: var(--accent); }
+.field-textarea { resize: vertical; min-height: 70px; }
+.field-select option { background: var(--bg); }
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--border);
+}
+
+.btn-ghost {
+  background: none;
+  border: 1px solid var(--border2);
+  color: var(--muted2);
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.btn-ghost:hover { color: var(--text); border-color: var(--muted2); }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  background: var(--surface2);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 0.7rem 1.2rem;
+  z-index: 9999;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: all 0.3s;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+@media (max-width: 768px) {
+  nav { padding: 1rem; flex-wrap: wrap; gap: 0.5rem; }
+  .summary-bar { grid-template-columns: repeat(3, 1fr); }
+  .toolbar { padding: 0.75rem 1rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">LAMP <span>LIST</span></div>
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="switchTab('active')">
+      Active <span class="tab-count" id="cnt-active">0</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('planned')">
+      Planned <span class="tab-count" id="cnt-planned">0</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('rejections')">
+      Rejections <span class="tab-count" id="cnt-rejections">0</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('coffee')">
+      Coffee Chats <span class="tab-count" id="cnt-coffee">0</span>
+    </button>
+  </div>
+  <div class="nav-actions">
+    <button class="btn-primary" onclick="openAddModal()">+ Add Row</button>
+  </div>
+</nav>
+
+<!-- SUMMARY BAR -->
+<div class="summary-bar">
+  <div class="summary-stat">
+    <div class="summary-label">Total Applications</div>
+    <div class="summary-value" id="sum-total">0</div>
+  </div>
+  <div class="summary-stat">
+    <div class="summary-label">Submitted</div>
+    <div class="summary-value" id="sum-submitted">0</div>
+  </div>
+  <div class="summary-stat">
+    <div class="summary-label">Planned</div>
+    <div class="summary-value" id="sum-planned">0</div>
+  </div>
+  <div class="summary-stat">
+    <div class="summary-label">Rejected / Ghosted</div>
+    <div class="summary-value" id="sum-rejected">0</div>
+  </div>
+  <div class="summary-stat">
+    <div class="summary-label">Coffee Chats</div>
+    <div class="summary-value" id="sum-chats">0</div>
+  </div>
+</div>
+
+<!-- ── ACTIVE PANEL ── -->
+<div class="panel active" id="panel-active">
+  <div class="toolbar">
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" placeholder="Search companies, roles..." oninput="renderActive()">
+    </div>
+    <select class="filter-select" onchange="renderActive()">
+      <option value="">All Statuses</option>
+      <option>Submitted</option>
+      <option>Active</option>
+      <option>Offer</option>
+    </select>
+    <div class="toolbar-spacer"></div>
+    <span class="row-count" id="rc-active"></span>
+  </div>
+  <div class="table-wrap">
+    <table id="tbl-active">
+      <thead>
+        <tr>
+          <th onclick="sortTable('active','company')">Company <span class="sort-icon">↕</span></th>
+          <th onclick="sortTable('active','area')">Area <span class="sort-icon">↕</span></th>
+          <th onclick="sortTable('active','role')">Role <span class="sort-icon">↕</span></th>
+          <th onclick="sortTable('active','status')">Status <span class="sort-icon">↕</span></th>
+          <th onclick="sortTable('active','deadline')">Deadline <span class="sort-icon">↕</span></th>
+          <th>Location</th>
+          <th>Corp Event</th>
+          <th>Chats</th>
+          <th>Practitioners</th>
+          <th>Notes</th>
+          <th>Link</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tbody-active"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ── PLANNED PANEL ── -->
+<div class="panel" id="panel-planned">
+  <div class="toolbar">
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" placeholder="Search companies, roles..." oninput="renderPlanned()">
+    </div>
+    <div class="toolbar-spacer"></div>
+    <span class="row-count" id="rc-planned"></span>
+  </div>
+  <div class="table-wrap">
+    <table id="tbl-planned">
+      <thead>
+        <tr>
+          <th onclick="sortTable('planned','company')">Company <span class="sort-icon">↕</span></th>
+          <th>Area</th>
+          <th>Role</th>
+          <th>Vet Only</th>
+          <th onclick="sortTable('planned','status')">Status <span class="sort-icon">↕</span></th>
+          <th>Deadline</th>
+          <th>Location</th>
+          <th>Corp Event</th>
+          <th>Chats</th>
+          <th>Practitioners</th>
+          <th>Link</th>
+          <th>Notes</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tbody-planned"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ── REJECTIONS PANEL ── -->
+<div class="panel" id="panel-rejections">
+  <div class="toolbar">
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" placeholder="Search firms..." oninput="renderRejections()">
+    </div>
+    <select class="filter-select" onchange="renderRejections()">
+      <option value="">All</option>
+      <option>Rejected</option>
+      <option>Ghosted</option>
+    </select>
+    <div class="toolbar-spacer"></div>
+    <span class="row-count" id="rc-rejections"></span>
+  </div>
+  <div class="table-wrap">
+    <table id="tbl-rejections">
+      <thead>
+        <tr>
+          <th>Firm / Company</th>
+          <th>Area of Focus</th>
+          <th onclick="sortTable('rejections','status')">Status <span class="sort-icon">↕</span></th>
+          <th onclick="sortTable('rejections','deadline')">Deadline <span class="sort-icon">↕</span></th>
+          <th>Location</th>
+          <th>Corp Event</th>
+          <th>Engagement Strategy</th>
+          <th>Chats Req.</th>
+          <th>Chats Done</th>
+          <th>Practitioners</th>
+          <th>App Link</th>
+          <th>Notes</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tbody-rejections"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ── COFFEE CHATS PANEL ── -->
+<div class="panel" id="panel-coffee">
+  <div class="toolbar">
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" placeholder="Search names, companies..." oninput="renderCoffee()">
+    </div>
+    <div class="toolbar-spacer"></div>
+    <span class="row-count" id="rc-coffee"></span>
+  </div>
+  <div class="table-wrap">
+    <table id="tbl-coffee">
+      <thead>
+        <tr>
+          <th onclick="sortTable('coffee','name')">Name / Date <span class="sort-icon">↕</span></th>
+          <th>Notes / Feedback</th>
+          <th>Company</th>
+          <th>Function</th>
+          <th>Sent</th>
+          <th>Resp. Pending</th>
+          <th>Confirmed</th>
+          <th onclick="sortTable('coffee','complete')">Complete <span class="sort-icon">↕</span></th>
+          <th>Thank You</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tbody-coffee"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ── ADD MODAL ── -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <div class="modal-title" id="modal-title">Add Entry</div>
+    <div id="modal-form"></div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="saveModal()">Save Entry</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DATA ──
+const DB_KEY = 'lamp-list-v2';
+
+const DEFAULTS = {
+  active: [
+    { id:1, company:'General Dynamics', area:'Defense', role:'Business Support', status:'Submitted', deadline:'TBD', location:'Dedham, MA', event:'', chats:'', practitioners:'', link:'https://www.gd.com/careers/business-support-intern-dedham-ma-us-2026-71500-gdms-opportunity', notes:'' },
+    { id:2, company:'Honeywell International', area:'Manufacturing', role:'General Management', status:'Submitted', deadline:'TBD', location:'Charlotte, NC', event:'', chats:'', practitioners:'', link:'https://ibqbjb.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/Honeywell/my-profile', notes:'' },
+    { id:3, company:'Adobe Inc.', area:'Software', role:'Product Manager', status:'Submitted', deadline:'TBD', location:'San Francisco, CA', event:'', chats:'', practitioners:'', link:'https://careers.adobe.com/us/en/apply', notes:'' },
+    { id:4, company:'TikTok', area:'Social Media', role:'Global Sports', status:'Submitted', deadline:'TBD', location:'New York City, NY', event:'', chats:'', practitioners:'', link:'https://lifeattiktok.com/resume/7632491893825800453/apply', notes:'' },
+    { id:5, company:'Palantir Technologies', area:'Software', role:'American Tech Fellowship', status:'Submitted', deadline:'TBD', location:'Remote', event:'', chats:'', practitioners:'', link:'https://www.palantir.com/american-tech-fellowship/', notes:'' },
+    { id:6, company:'Shield AI', area:'Defense', role:'Strategy & Operations', status:'Submitted', deadline:'TBD', location:'San Francisco, CA', event:'', chats:'', practitioners:'', link:'https://jobs.lever.co/shieldai/1721f9b3-b098-4988-bbb6-2d0382936be5', notes:'' },
+    { id:7, company:'Skydio', area:'Defense', role:'Supply Chain', status:'Submitted', deadline:'TBD', location:'San Mateo, CA', event:'', chats:'', practitioners:'', link:'https://jobs.ashbyhq.com/skydio/2d21f482-3224-4906-a1bb-6a64436774cb', notes:'' },
+    { id:8, company:'Wellspoken', area:'Software', role:'Growth & Operations', status:'Submitted', deadline:'TBD', location:'Remote', event:'', chats:'', practitioners:'', link:'https://mba-johnson-cornell.12twenty.com/jobPostings', notes:'' },
+  ],
+  planned: [
+    { id:101, company:'JPMorganChase', area:'Financial Services', role:'Military Pathways Rotational Program', veteran:'Yes', status:'Planned', deadline:'TBD', location:'New York, NY / Wilmington, DE / Columbus, OH', event:'TBD', chats:'TBD', practitioners:'TBD', link:'https://www.jpmorganchase.com/newsroom/stories/corporate-world-help-veterans-navigate-the-reverse-military-transition', notes:'TBD' },
+    { id:102, company:'Palantir Technologies', area:'Software Platforms', role:'Deployment Strategist', veteran:'No', status:'Planned', deadline:'TBD', location:'New York, NY / Washington, D.C.', event:'TBD', chats:'TBD', practitioners:'TBD', link:'https://www.palantir.com/careers/open-positions/', notes:'TBD' },
+    { id:103, company:'GE Aerospace', area:'Aerospace/Defense', role:'Military Officer Leadership Program', veteran:'Yes', status:'Planned', deadline:'TBD', location:'Lynn, MA / Evendale, OH / West Chester, OH', event:'TBD', chats:'TBD', practitioners:'TBD', link:'https://careers.geaerospace.com/global/en/military-officer-leadership-program', notes:'TBD' },
+    { id:104, company:'Anduril Industries', area:'Aerospace/Defense', role:'Mission Operation Engineer', veteran:'No', status:'Planned', deadline:'TBD', location:'Costa Mesa, CA / Boston, MA / Washington, D.C.', event:'TBD', chats:'TBD', practitioners:'TBD', link:'https://www.anduril.com/careers', notes:'TBD' },
+    { id:105, company:'RTX Corporation', area:'Aerospace/Defense', role:'Leadership Development Program', veteran:'No', status:'Planned', deadline:'TBD', location:'Arlington, VA / Hartford, CT / Charlotte, NC', event:'TBD', chats:'TBD', practitioners:'TBD', link:'https://careers.rtx.com/global/en/leadership-development-programs', notes:'TBD' },
+    { id:106, company:'BlackRock', area:'Financial Services', role:'U.S. Veterans Transition Program', veteran:'Yes', status:'Planned', deadline:'TBD', location:'New York, NY / Atlanta, GA', event:'TBD', chats:'TBD', practitioners:'TBD', link:'https://careers.blackrock.com/veterans-programs', notes:'TBD' },
+    { id:107, company:'Lockheed Martin', area:'Aerospace/Defense', role:'Finance Leadership Development Program', veteran:'No', status:'Planned', deadline:'TBD', location:'Bethesda, MD', event:'TBD', chats:'TBD', practitioners:'TBD', link:'https://www.lockheedmartin.com/en-us/careers/why-lm/leadership-development.html', notes:'TBD' },
+    { id:108, company:'Bank of America', area:'Financial Services', role:'Veteran Associate Program', veteran:'Yes', status:'Planned', deadline:'TBD', location:'New York, NY', event:'TBD', chats:'TBD', practitioners:'TBD', link:'https://careers.bankofamerica.com/en-us/opportunity-inclusion/veterans', notes:'TBD' },
+    { id:109, company:'Citibank', area:'Financial Services', role:'Military Officer Leadership Program', veteran:'Yes', status:'Planned', deadline:'TBD', location:'Tampa, FL / New York, NY / Jacksonville, FL', event:'TBD', chats:'TBD', practitioners:'TBD', link:'https://www.citigroup.com/global/news/perspectives/2019/coming-together-to-honor-all-who-have-served', notes:'TBD' },
+    { id:110, company:'BAE Systems', area:'Aerospace/Defense', role:'Leadership Development Program', veteran:'No', status:'Planned', deadline:'TBD', location:'Falls Church, VA / Nashua, NH', event:'TBD', chats:'TBD', practitioners:'TBD', link:'https://jobs.baesystems.com/global/en/ldp', notes:'TBD' },
+    { id:111, company:'Dell Technologies', area:'Computer Hardware', role:'Finance Development Program', veteran:'No', status:'Planned', deadline:'TBD', location:'Round Rock, TX / Hopkinton, MA', event:'TBD', chats:'TBD', practitioners:'TBD', link:'https://iawmqy.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/careers/pages/recent-graduates', notes:'TBD' },
+  ],
+  rejections: [
+    { id:201, company:'Johnson & Johnson (Marketing LDP)', area:'Strategic Marketing, Commercial Execution, Consumer & Customer Insights, Digital & Innovation', status:'Rejected', deadline:'Unknown', location:'Raynham, MA', event:'', strategy:'1x Practitioner Chat (Cold), Veteran Conference', chatsReq:'1', chatsDone:'1', practitioners:'Bob Reed', link:'https://www.careers.jnj.com', notes:'' },
+    { id:202, company:'Symbotic (Executive Projects)', area:'Consulting - Strategic/Management', status:'Rejected', deadline:'Unknown', location:'Wilmington, MA', event:'', strategy:'', chatsReq:'', chatsDone:'', practitioners:'', link:'https://symbotic.wd1.myworkdayjobs.com', notes:'' },
+    { id:203, company:'Corning Incorporated (Management LDP)', area:'Mobile Consumer Electronics, Automotive, Life Sciences, Optical Communications', status:'Rejected', deadline:'2025-12-09', location:'Tewksbury, MA', event:'2025-10-02', strategy:'1x Practitioner Chat (Cold)', chatsReq:'1', chatsDone:'1', practitioners:'Tom Conners', link:'Closed', notes:'' },
+    { id:204, company:'Formlabs (Global Operations)', area:'Management, Marketing - Business Development', status:'Rejected', deadline:'Unknown', location:'Somerville, MA', event:'', strategy:'', chatsReq:'', chatsDone:'', practitioners:'', link:'https://careers.formlabs.com/job/7452885', notes:'' },
+    { id:205, company:'JP Morgan Chase (Fin/Strategy LDP)', area:'Data & Analytics, Product, Project/Program Management, Strategy', status:'Rejected', deadline:'2026-01-12', location:'New York City, NY', event:'2025-10-16', strategy:'1x Practitioner Chat (JTS), 1x Practitioner Chat (Cold)', chatsReq:'2', chatsDone:'2', practitioners:'Kerry Von Malderghem, Keith Schemel', link:'https://jpmc.fa.oraclecloud.com', notes:'' },
+    { id:206, company:'Coinbase (Prod. Marketing)', area:'Executive Leadership & General Management, Information Technology', status:'Rejected', deadline:'Unknown', location:'New York City, NY', event:'2025-10-21', strategy:'', chatsReq:'', chatsDone:'', practitioners:'', link:'https://www.gem.com/form?formID=1d16ae02', notes:'' },
+    { id:207, company:'Fidelity Investments (Finance LDP)', area:'Finance - Asset Management, Private Wealth Management', status:'Rejected', deadline:'Unknown', location:'Boston, MA', event:'', strategy:'Veteran Conference', chatsReq:'', chatsDone:'', practitioners:'', link:'Closed', notes:'' },
+    { id:208, company:'Goldman Sachs (Wealth Mgmt)', area:'Finance - Asset Management, Private Wealth Management', status:'Rejected', deadline:'Unknown', location:'Boston, MA', event:'', strategy:'', chatsReq:'', chatsDone:'', practitioners:'', link:'https://higher.gs.com/roles/152291', notes:'' },
+    { id:209, company:'Bank of America Merrill Lynch (Strategy LDP)', area:'Financial Services, Consulting - Strategic/Management', status:'Rejected', deadline:'Unknown', location:'Boston, MA', event:'', strategy:'Veteran Conference', chatsReq:'', chatsDone:'', practitioners:'', link:'https://careers.bankofamerica.com', notes:'' },
+    { id:210, company:'General Dynamics (Business Ops)', area:'Government Public Sector and Military, GDIT', status:'Rejected', deadline:'Unknown', location:'St. Petersburg, FL', event:'', strategy:'', chatsReq:'', chatsDone:'', practitioners:'', link:'https://careers-gd-ots.icims.com/jobs/35257', notes:'' },
+    { id:211, company:'Medtronic (Management LDP)', area:'Management, Marketing - Business Development', status:'Rejected', deadline:'2026-01-05', location:'Boston, MA', event:'2025-12-22', strategy:'', chatsReq:'', chatsDone:'', practitioners:'', link:'https://medtronic.wd1.myworkdayjobs.com', notes:'' },
+    { id:212, company:'Republic Services (Management LDP)', area:'Management, Marketing - Business Development', status:'Rejected', deadline:'Unknown', location:'Boston, MA', event:'', strategy:'', chatsReq:'', chatsDone:'', practitioners:'', link:'https://jobs.republicservices.com', notes:'' },
+    { id:213, company:'Raytheon Technology Corp. (Business Mgmt)', area:'Automotive/Transportation Manufacturing, Government Public Sector', status:'Rejected', deadline:'Unknown', location:'Hartford, CT', event:'', strategy:'', chatsReq:'', chatsDone:'', practitioners:'', link:'https://globalhr.wd5.myworkdayjobs.com', notes:'' },
+    { id:214, company:'Biogen (Management LDP)', area:'Management, Marketing - Business Development', status:'Rejected', deadline:'2026-01-20', location:'Cambridge, MA', event:'', strategy:'', chatsReq:'', chatsDone:'', practitioners:'', link:'https://biibhr.wd3.myworkdayjobs.com', notes:'' },
+    { id:215, company:'JP Morgan Chase (Wealth Mgmt)', area:'Finance - Asset Management, Private Wealth Management', status:'Rejected', deadline:'2026-01-01', location:'Boston, MA', event:'', strategy:'1x Practitioner Chat (Cold)', chatsReq:'1', chatsDone:'1', practitioners:'Seamus Connelly', link:'https://jpmc.fa.oraclecloud.com', notes:'' },
+    { id:216, company:'Citibank (Fin/Strategy LDP)', area:'Data & Analytics, Product, Project/Program Management, Strategy', status:'Rejected', deadline:'2026-01-16', location:'New York City, NY', event:'2025-10-22', strategy:'', chatsReq:'', chatsDone:'', practitioners:'', link:'https://jobs.citi.com', notes:'' },
+    { id:217, company:'Formlabs (Go-to-market)', area:'Management, Marketing - Business Development', status:'Rejected', deadline:'TBD', location:'Somerville, MA', event:'', strategy:'', chatsReq:'', chatsDone:'', practitioners:'', link:'https://careers.formlabs.com/job/7574757', notes:'' },
+    { id:218, company:'Pepsico (Strategic Finance)', area:'Data & Analytics, Product, Project/Program Management, Strategy', status:'Rejected', deadline:'TBD', location:'Purchase, NY', event:'', strategy:'', chatsReq:'', chatsDone:'', practitioners:'', link:'https://uscampus-pepsico.icims.com', notes:'' },
+    { id:219, company:'Vertex Pharma (LDP)', area:'Management, Marketing - Business Development', status:'Rejected', deadline:'TBD', location:'Boston, MA', event:'', strategy:'', chatsReq:'', chatsDone:'', practitioners:'', link:'', notes:'' },
+    { id:220, company:'Skydio (Sales)', area:'Government Public Sector and Military', status:'Rejected', deadline:'TBD', location:'San Mateo, CA', event:'', strategy:'', chatsReq:'', chatsDone:'', practitioners:'', link:'https://www.skydio.com/jobs', notes:'' },
+    { id:221, company:'Morgan Stanley (Wealth Mgmt)', area:'Data & Analytics, Product, Strategy', status:'Ghosted', deadline:'2025-11-25', location:'Rochester, NY', event:'', strategy:'', chatsReq:'', chatsDone:'', practitioners:'', link:'https://ms.wd5.myworkdayjobs.com', notes:'' },
+    { id:222, company:'UBS (Wealth Mgmt)', area:'Data & Analytics, Product, Strategy', status:'Ghosted', deadline:'2026-01-10', location:'New York City, NY', event:'', strategy:'', chatsReq:'', chatsDone:'', practitioners:'', link:'https://jobs.ubs.com', notes:'' },
+    { id:223, company:'CIA (Operations)', area:'Government Public Sector, Information Technology', status:'Ghosted', deadline:'2026-01-10', location:'Washington, D.C.', event:'', strategy:'', chatsReq:'', chatsDone:'', practitioners:'', link:'', notes:'' },
+    { id:224, company:'TD Bank Group (Marketing)', area:'Data & Analytics, Product, Strategy', status:'Ghosted', deadline:'2026-01-10', location:'Boston, MA', event:'', strategy:'', chatsReq:'', chatsDone:'', practitioners:'', link:'https://td.wd3.myworkdayjobs.com', notes:'' },
+  ],
+  coffee: [
+    { id:301, name:'Jessica Chen', date:'2025-09-16', notes:'Need to establish a better connection and need to tailor questions to finding out something about the firm specifically.', company:'PwC', fn:'Financial', sent:true, respPending:false, confirmed:false, complete:true, thankYou:true },
+    { id:302, name:'Jesh Enerio', date:'2025-09-18', notes:'Good small talk, good tone, should have done pitch somewhere, expanded on answers, good day in the life question, mirror body language/project confidence', company:'Kearney', fn:'Food & Beverage, Operations, Supply Chain', sent:true, respPending:false, confirmed:false, complete:true, thankYou:false },
+    { id:303, name:'Eshan Varma', date:'2025-09-19', notes:'Take control, short pitch, good firm specific questions, be relaxed and confident', company:'Accenture Strategy', fn:'Private Equity, Enterprise Transformation, Healthcare', sent:true, respPending:false, confirmed:false, complete:true, thankYou:false },
+    { id:304, name:'Ryan Lohin', date:'2025-09-19', notes:'Be specific with what you\'ve done, bridge into what brought you to MBA, why Cornell if alumni', company:'Deloitte', fn:'Private Equity', sent:true, respPending:false, confirmed:false, complete:true, thankYou:false },
+    { id:305, name:'Gaurav Sharma', date:'2025-09-19', notes:'Need to work on pitch and flow of chat', company:'Bain', fn:'Private Equity, Due Diligence, Healthcare', sent:true, respPending:false, confirmed:false, complete:true, thankYou:false },
+    { id:306, name:'Jessica Lui', date:'2025-09-22', notes:'Leverage Johnson alumni, good follow up questions', company:'PwC', fn:'Risk Advisory', sent:true, respPending:false, confirmed:false, complete:true, thankYou:false },
+    { id:307, name:'Colby Snyder', date:'2025-09-22', notes:'Try doing the intro in beginning and don\'t end too early', company:'McKinsey', fn:'Alternative Investments, Agriculture', sent:true, respPending:false, confirmed:false, complete:true, thankYou:false },
+    { id:308, name:'Zara Rahman', date:'2025-09-23', notes:'Engaging, need to know more about your work, need better reason for consulting/pitch, good questions', company:'LEK', fn:'Industrial, DD', sent:true, respPending:false, confirmed:false, complete:true, thankYou:false },
+    { id:309, name:'Vikram Samson', date:'2025-09-25', notes:'Good questions, make pitch longer and make sure to touch what you did at your last job', company:'McKinsey', fn:'Consulting, Tech, Healthcare, Manufacturing', sent:true, respPending:false, confirmed:false, complete:true, thankYou:false },
+    { id:310, name:'Jake Potoczak', date:'2025-09-26', notes:'Change pitch format, tell the story not on your resume and explain why', company:'EY-Parthenon', fn:'PE Work, digital infrastructure and software strategy', sent:true, respPending:false, confirmed:false, complete:true, thankYou:false },
+    { id:311, name:'Connor Maguire', date:'2025-09-26', notes:'Virtual interview before corporate briefing, why commercial banking', company:'JPMC', fn:'CAP, Strategy/Finance', sent:true, respPending:false, confirmed:false, complete:true, thankYou:false },
+    { id:312, name:'Cade Ingleson', date:'2025-09-30', notes:'Trek trip, multiple locations, lot of veterans', company:'Corning', fn:'LEAD, Sustainability, Strategy', sent:true, respPending:false, confirmed:false, complete:true, thankYou:false },
+  ]
+};
+
+// ── STATE ──
+let data = loadData();
+let currentTab = 'active';
+let sortState = { active:{col:null,dir:1}, planned:{col:null,dir:1}, rejections:{col:null,dir:1}, coffee:{col:null,dir:1} };
+
+function loadData() {
+  try {
+    const saved = localStorage.getItem(DB_KEY);
+    return saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULTS));
+  } catch { return JSON.parse(JSON.stringify(DEFAULTS)); }
+}
+
+function save() {
+  localStorage.setItem(DB_KEY, JSON.stringify(data));
+}
+
+function nextId() { return Date.now(); }
+
+// ── TAB SWITCHING ──
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + tab).classList.add('active');
+  event.currentTarget.classList.add('active');
+  renderAll();
+}
+
+// ── SUMMARY ──
+function updateSummary() {
+  const total = data.active.length + data.planned.length + data.rejections.length;
+  const submitted = data.active.filter(r => r.status === 'Submitted').length;
+  const planned = data.planned.length;
+  const rejected = data.rejections.length;
+  const chats = data.coffee.length;
+
+  document.getElementById('sum-total').textContent = total;
+  document.getElementById('sum-submitted').textContent = submitted;
+  document.getElementById('sum-planned').textContent = planned;
+  document.getElementById('sum-rejected').textContent = rejected;
+  document.getElementById('sum-chats').textContent = chats;
+
+  document.getElementById('cnt-active').textContent = data.active.length;
+  document.getElementById('cnt-planned').textContent = data.planned.length;
+  document.getElementById('cnt-rejections').textContent = data.rejections.length;
+  document.getElementById('cnt-coffee').textContent = data.coffee.length;
+}
+
+// ── STATUS BADGE ──
+function statusBadge(status) {
+  const s = (status || 'TBD').trim();
+  const cls = 'badge-' + s.charAt(0).toUpperCase() + s.slice(1).toLowerCase().replace(/\s/g,'');
+  return `<span class="badge ${cls}">${s}</span>`;
+}
+
+// ── INLINE STATUS SELECT ──
+function statusSelect(current, tab, id, field) {
+  const opts = {
+    active: ['Submitted','Active','Offer'],
+    planned: ['Planned','Active','Submitted'],
+    rejections: ['Rejected','Ghosted'],
+    coffee: []
+  }[tab] || [];
+  const s = (current||'').trim();
+  const cls = 'badge badge-' + s.charAt(0).toUpperCase() + s.slice(1).toLowerCase().replace(/\s/g,'');
+  return `<select class="status-select ${cls}" onchange="updateField('${tab}',${id},'${field}',this.value);applyStatusStyle(this)">
+    ${opts.map(o=>`<option ${o===s?'selected':''} value="${o}">${o}</option>`).join('')}
+  </select>`;
+}
+
+function applyStatusStyle(sel) {
+  const s = (sel.value||'').trim();
+  sel.className = 'status-select badge badge-' + s.charAt(0).toUpperCase() + s.slice(1).toLowerCase().replace(/\s/g,'');
+}
+
+// ── UPDATE FIELD ──
+function updateField(tab, id, field, value) {
+  const row = data[tab].find(r => r.id === id);
+  if (row) { row[field] = value; save(); updateSummary(); }
+}
+
+function handleEdit(el, tab, id, field) {
+  el.setAttribute('contenteditable', 'true');
+  el.addEventListener('blur', () => {
+    updateField(tab, id, field, el.textContent.trim());
+    el.removeAttribute('contenteditable');
+  }, { once: true });
+  el.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } });
+}
+
+// ── EDITABLE CELL ──
+function editCell(tab, id, field, value, classes='') {
+  const v = escHtml(value || '');
+  return `<span class="${classes}" onclick="handleEdit(this,'${tab}',${id},'${field}')" title="Click to edit">${v}</span>`;
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── LINK CELL ──
+function linkCell(url) {
+  if (!url || url === 'Closed' || url === 'TBD') return url || '—';
+  return `<a class="link-btn" href="${url}" target="_blank" rel="noopener" title="Open link">↗</a>`;
+}
+
+// ── DELETE ──
+function deleteRow(tab, id) {
+  data[tab] = data[tab].filter(r => r.id !== id);
+  save(); renderAll();
+}
+
+// ── SORT ──
+function sortTable(tab, col) {
+  if (sortState[tab].col === col) sortState[tab].dir *= -1;
+  else { sortState[tab].col = col; sortState[tab].dir = 1; }
+  renderAll();
+}
+
+function sorted(arr, tab) {
+  const { col, dir } = sortState[tab];
+  if (!col) return arr;
+  return [...arr].sort((a, b) => {
+    const av = (a[col]||'').toLowerCase(), bv = (b[col]||'').toLowerCase();
+    return av < bv ? -dir : av > bv ? dir : 0;
+  });
+}
+
+// ── FILTER ──
+function getFilter(panelId) {
+  const tb = document.querySelector(`#panel-${panelId} .toolbar`);
+  const q = tb?.querySelector('input')?.value?.toLowerCase() || '';
+  const st = tb?.querySelector('select')?.value || '';
+  return { q, st };
+}
+
+function matches(row, q, fields) {
+  if (!q) return true;
+  return fields.some(f => (row[f]||'').toLowerCase().includes(q));
+}
+
+// ── RENDER ACTIVE ──
+function renderActive() {
+  const { q, st } = getFilter('active');
+  let rows = sorted(data.active, 'active').filter(r =>
+    matches(r, q, ['company','area','role','location','notes','practitioners']) &&
+    (!st || r.status === st)
+  );
+  const tbody = document.getElementById('tbody-active');
+  document.getElementById('rc-active').textContent = rows.length + ' rows';
+
+  if (!rows.length) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="12">No entries found</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td class="cell-company">${editCell('active',r.id,'company',r.company,'cell-company')}</td>
+      <td class="cell-area">${editCell('active',r.id,'area',r.area)}</td>
+      <td class="cell-role">${editCell('active',r.id,'role',r.role)}</td>
+      <td>${statusSelect(r.status,'active',r.id,'status')}</td>
+      <td class="cell-deadline">${editCell('active',r.id,'deadline',r.deadline)}</td>
+      <td class="cell-location">${editCell('active',r.id,'location',r.location)}</td>
+      <td class="cell-event">${editCell('active',r.id,'event',r.event)}</td>
+      <td class="cell-chats">${editCell('active',r.id,'chats',r.chats)}</td>
+      <td>${editCell('active',r.id,'practitioners',r.practitioners)}</td>
+      <td class="cell-notes">${editCell('active',r.id,'notes',r.notes)}</td>
+      <td class="cell-link">${linkCell(r.link)}</td>
+      <td class="cell-actions">
+        <button class="action-btn del" onclick="deleteRow('active',${r.id})" title="Delete">×</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ── RENDER PLANNED ──
+function renderPlanned() {
+  const { q } = getFilter('planned');
+  let rows = sorted(data.planned, 'planned').filter(r =>
+    matches(r, q, ['company','area','role','location','notes','practitioners'])
+  );
+  const tbody = document.getElementById('tbody-planned');
+  document.getElementById('rc-planned').textContent = rows.length + ' rows';
+
+  if (!rows.length) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="13">No entries found</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td class="cell-company">${editCell('planned',r.id,'company',r.company)}</td>
+      <td>${editCell('planned',r.id,'area',r.area)}</td>
+      <td class="cell-role">${editCell('planned',r.id,'role',r.role)}</td>
+      <td>${r.veteran==='Yes' ? '<span class="vet-tag">VET</span>' : '<span style="color:var(--muted2);font-size:.7rem">—</span>'}</td>
+      <td>${statusSelect(r.status,'planned',r.id,'status')}</td>
+      <td>${editCell('planned',r.id,'deadline',r.deadline)}</td>
+      <td class="cell-location">${editCell('planned',r.id,'location',r.location)}</td>
+      <td>${editCell('planned',r.id,'event',r.event)}</td>
+      <td>${editCell('planned',r.id,'chats',r.chats)}</td>
+      <td>${editCell('planned',r.id,'practitioners',r.practitioners)}</td>
+      <td class="cell-link">${linkCell(r.link)}</td>
+      <td>${editCell('planned',r.id,'notes',r.notes)}</td>
+      <td class="cell-actions">
+        <button class="action-btn del" onclick="deleteRow('planned',${r.id})" title="Delete">×</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ── RENDER REJECTIONS ──
+function renderRejections() {
+  const { q, st } = getFilter('rejections');
+  let rows = sorted(data.rejections, 'rejections').filter(r =>
+    matches(r, q, ['company','area','location','practitioners','strategy']) &&
+    (!st || r.status === st)
+  );
+  const tbody = document.getElementById('tbody-rejections');
+  document.getElementById('rc-rejections').textContent = rows.length + ' rows';
+
+  if (!rows.length) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="13">No entries found</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td class="cell-company" style="font-family:Syne,sans-serif;font-weight:700">${escHtml(r.company)}</td>
+      <td style="max-width:220px;font-size:.7rem;color:var(--muted2)">${editCell('rejections',r.id,'area',r.area)}</td>
+      <td>${statusSelect(r.status,'rejections',r.id,'status')}</td>
+      <td>${editCell('rejections',r.id,'deadline',r.deadline)}</td>
+      <td class="cell-location">${editCell('rejections',r.id,'location',r.location)}</td>
+      <td>${editCell('rejections',r.id,'event',r.event)}</td>
+      <td style="max-width:200px;font-size:.7rem">${editCell('rejections',r.id,'strategy',r.strategy)}</td>
+      <td class="cell-chats">${editCell('rejections',r.id,'chatsReq',r.chatsReq)}</td>
+      <td class="cell-chats">${editCell('rejections',r.id,'chatsDone',r.chatsDone)}</td>
+      <td>${editCell('rejections',r.id,'practitioners',r.practitioners)}</td>
+      <td class="cell-link">${linkCell(r.link)}</td>
+      <td class="cell-notes">${editCell('rejections',r.id,'notes',r.notes)}</td>
+      <td class="cell-actions">
+        <button class="action-btn del" onclick="deleteRow('rejections',${r.id})" title="Delete">×</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ── RENDER COFFEE ──
+function renderCoffee() {
+  const { q } = getFilter('coffee');
+  let rows = sorted(data.coffee, 'coffee').filter(r =>
+    matches(r, q, ['name','company','fn','notes'])
+  );
+  const tbody = document.getElementById('tbody-coffee');
+  document.getElementById('rc-coffee').textContent = rows.length + ' rows';
+
+  if (!rows.length) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="10">No coffee chats yet</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td style="font-family:Syne,sans-serif;font-weight:700">
+        ${escHtml(r.name)}<br>
+        <span style="font-family:'Space Mono',monospace;font-weight:400;font-size:.65rem;color:var(--muted2)">${escHtml(r.date||'')}</span>
+      </td>
+      <td style="max-width:240px;font-size:.72rem;color:var(--muted2)">${editCell('coffee',r.id,'notes',r.notes)}</td>
+      <td>${editCell('coffee',r.id,'company',r.company)}</td>
+      <td style="font-size:.72rem;color:var(--muted2)">${editCell('coffee',r.id,'fn',r.fn)}</td>
+      <td class="cell-chats"><input type="checkbox" class="chat-check" ${r.sent?'checked':''} onchange="updateField('coffee',${r.id},'sent',this.checked)"></td>
+      <td class="cell-chats"><input type="checkbox" class="chat-check" ${r.respPending?'checked':''} onchange="updateField('coffee',${r.id},'respPending',this.checked)"></td>
+      <td class="cell-chats"><input type="checkbox" class="chat-check" ${r.confirmed?'checked':''} onchange="updateField('coffee',${r.id},'confirmed',this.checked)"></td>
+      <td class="cell-chats"><input type="checkbox" class="chat-check" ${r.complete?'checked':''} onchange="updateField('coffee',${r.id},'complete',this.checked)"></td>
+      <td class="cell-chats"><input type="checkbox" class="chat-check" ${r.thankYou?'checked':''} onchange="updateField('coffee',${r.id},'thankYou',this.checked)"></td>
+      <td class="cell-actions">
+        <button class="action-btn del" onclick="deleteRow('coffee',${r.id})" title="Delete">×</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function renderAll() {
+  renderActive();
+  renderPlanned();
+  renderRejections();
+  renderCoffee();
+  updateSummary();
+}
+
+// ── MODAL ──
+let _editTarget = null;
+
+function openAddModal() {
+  _editTarget = null;
+  document.getElementById('modal-title').textContent = `Add — ${currentTab.charAt(0).toUpperCase()+currentTab.slice(1)}`;
+  document.getElementById('modal-form').innerHTML = buildForm(currentTab, null);
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeModal(e) {
+  if (e && e.target !== document.getElementById('modal-overlay')) return;
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+
+function buildForm(tab, row) {
+  const v = k => escHtml((row && row[k]) || '');
+  if (tab === 'active') return `
+    <div class="modal-grid">
+      <div class="field-group full"><div class="field-label">Company</div><input class="field-input" id="f-company" value="${v('company')}" placeholder="e.g. Lockheed Martin"></div>
+      <div class="field-group"><div class="field-label">Area of Focus</div><input class="field-input" id="f-area" value="${v('area')}" placeholder="Defense"></div>
+      <div class="field-group"><div class="field-label">Role</div><input class="field-input" id="f-role" value="${v('role')}" placeholder="Business Operations"></div>
+      <div class="field-group"><div class="field-label">Status</div>
+        <select class="field-select" id="f-status">
+          ${['Submitted','Active','Offer'].map(o=>`<option ${v('status')===o?'selected':''}>${o}</option>`).join('')}
+        </select>
+      </div>
+      <div class="field-group"><div class="field-label">Deadline</div><input class="field-input" id="f-deadline" value="${v('deadline')}" placeholder="TBD or YYYY-MM-DD"></div>
+      <div class="field-group"><div class="field-label">Location</div><input class="field-input" id="f-location" value="${v('location')}" placeholder="Boston, MA"></div>
+      <div class="field-group"><div class="field-label">Corp Event Date</div><input class="field-input" id="f-event" value="${v('event')}" placeholder="YYYY-MM-DD"></div>
+      <div class="field-group"><div class="field-label">Coffee Chats</div><input class="field-input" id="f-chats" value="${v('chats')}" placeholder="#"></div>
+      <div class="field-group full"><div class="field-label">Practitioners</div><input class="field-input" id="f-practitioners" value="${v('practitioners')}" placeholder="Names"></div>
+      <div class="field-group full"><div class="field-label">App Link</div><input class="field-input" id="f-link" value="${v('link')}" placeholder="https://..."></div>
+      <div class="field-group full"><div class="field-label">Notes</div><textarea class="field-textarea" id="f-notes">${v('notes')}</textarea></div>
+    </div>`;
+
+  if (tab === 'planned') return `
+    <div class="modal-grid">
+      <div class="field-group full"><div class="field-label">Company</div><input class="field-input" id="f-company" value="${v('company')}"></div>
+      <div class="field-group"><div class="field-label">Area of Focus</div><input class="field-input" id="f-area" value="${v('area')}"></div>
+      <div class="field-group"><div class="field-label">Role</div><input class="field-input" id="f-role" value="${v('role')}"></div>
+      <div class="field-group"><div class="field-label">Veteran Exclusive</div>
+        <select class="field-select" id="f-veteran">
+          <option ${v('veteran')==='Yes'?'selected':''}>Yes</option>
+          <option ${v('veteran')==='No'?'selected':''}>No</option>
+        </select>
+      </div>
+      <div class="field-group"><div class="field-label">Status</div>
+        <select class="field-select" id="f-status">
+          ${['Planned','Active','Submitted'].map(o=>`<option ${v('status')===o?'selected':''}>${o}</option>`).join('')}
+        </select>
+      </div>
+      <div class="field-group"><div class="field-label">Deadline</div><input class="field-input" id="f-deadline" value="${v('deadline')}"></div>
+      <div class="field-group full"><div class="field-label">Location</div><input class="field-input" id="f-location" value="${v('location')}"></div>
+      <div class="field-group"><div class="field-label">Corp Event Date</div><input class="field-input" id="f-event" value="${v('event')}"></div>
+      <div class="field-group"><div class="field-label">Coffee Chats</div><input class="field-input" id="f-chats" value="${v('chats')}"></div>
+      <div class="field-group full"><div class="field-label">Practitioners</div><input class="field-input" id="f-practitioners" value="${v('practitioners')}"></div>
+      <div class="field-group full"><div class="field-label">Job Link</div><input class="field-input" id="f-link" value="${v('link')}"></div>
+      <div class="field-group full"><div class="field-label">Notes</div><textarea class="field-textarea" id="f-notes">${v('notes')}</textarea></div>
+    </div>`;
+
+  if (tab === 'rejections') return `
+    <div class="modal-grid">
+      <div class="field-group full"><div class="field-label">Firm / Company</div><input class="field-input" id="f-company" value="${v('company')}"></div>
+      <div class="field-group full"><div class="field-label">Area of Focus</div><textarea class="field-textarea" id="f-area" style="min-height:50px">${v('area')}</textarea></div>
+      <div class="field-group"><div class="field-label">Status</div>
+        <select class="field-select" id="f-status">
+          ${['Rejected','Ghosted'].map(o=>`<option ${v('status')===o?'selected':''}>${o}</option>`).join('')}
+        </select>
+      </div>
+      <div class="field-group"><div class="field-label">Deadline</div><input class="field-input" id="f-deadline" value="${v('deadline')}"></div>
+      <div class="field-group"><div class="field-label">Location</div><input class="field-input" id="f-location" value="${v('location')}"></div>
+      <div class="field-group"><div class="field-label">Corp Event Date</div><input class="field-input" id="f-event" value="${v('event')}"></div>
+      <div class="field-group full"><div class="field-label">Engagement Strategy</div><input class="field-input" id="f-strategy" value="${v('strategy')}"></div>
+      <div class="field-group"><div class="field-label">Chats Requested</div><input class="field-input" id="f-chatsReq" value="${v('chatsReq')}"></div>
+      <div class="field-group"><div class="field-label">Chats Completed</div><input class="field-input" id="f-chatsDone" value="${v('chatsDone')}"></div>
+      <div class="field-group full"><div class="field-label">Practitioners</div><input class="field-input" id="f-practitioners" value="${v('practitioners')}"></div>
+      <div class="field-group full"><div class="field-label">App Link</div><input class="field-input" id="f-link" value="${v('link')}"></div>
+      <div class="field-group full"><div class="field-label">Notes</div><textarea class="field-textarea" id="f-notes">${v('notes')}</textarea></div>
+    </div>`;
+
+  if (tab === 'coffee') return `
+    <div class="modal-grid">
+      <div class="field-group"><div class="field-label">Name</div><input class="field-input" id="f-name" value="${v('name')}"></div>
+      <div class="field-group"><div class="field-label">Date</div><input class="field-input" id="f-date" type="date" value="${v('date')}"></div>
+      <div class="field-group"><div class="field-label">Company</div><input class="field-input" id="f-company" value="${v('company')}"></div>
+      <div class="field-group"><div class="field-label">Function</div><input class="field-input" id="f-fn" value="${v('fn')}"></div>
+      <div class="field-group full"><div class="field-label">Notes / Feedback</div><textarea class="field-textarea" id="f-notes">${v('notes')}</textarea></div>
+    </div>`;
+}
+
+function g(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+
+function saveModal() {
+  const tab = currentTab;
+  let newRow = { id: nextId() };
+
+  if (tab === 'active') {
+    if (!g('f-company')) { showToast('Company name required'); return; }
+    newRow = { ...newRow, company:g('f-company'), area:g('f-area'), role:g('f-role'), status:g('f-status'), deadline:g('f-deadline'), location:g('f-location'), event:g('f-event'), chats:g('f-chats'), practitioners:g('f-practitioners'), link:g('f-link'), notes:g('f-notes') };
+  } else if (tab === 'planned') {
+    if (!g('f-company')) { showToast('Company name required'); return; }
+    newRow = { ...newRow, company:g('f-company'), area:g('f-area'), role:g('f-role'), veteran:g('f-veteran'), status:g('f-status'), deadline:g('f-deadline'), location:g('f-location'), event:g('f-event'), chats:g('f-chats'), practitioners:g('f-practitioners'), link:g('f-link'), notes:g('f-notes') };
+  } else if (tab === 'rejections') {
+    if (!g('f-company')) { showToast('Company name required'); return; }
+    newRow = { ...newRow, company:g('f-company'), area:g('f-area'), status:g('f-status'), deadline:g('f-deadline'), location:g('f-location'), event:g('f-event'), strategy:g('f-strategy'), chatsReq:g('f-chatsReq'), chatsDone:g('f-chatsDone'), practitioners:g('f-practitioners'), link:g('f-link'), notes:g('f-notes') };
+  } else if (tab === 'coffee') {
+    if (!g('f-name')) { showToast('Name required'); return; }
+    newRow = { ...newRow, name:g('f-name'), date:g('f-date'), company:g('f-company'), fn:g('f-fn'), notes:g('f-notes'), sent:false, respPending:false, confirmed:false, complete:false, thankYou:false };
+  }
+
+  data[tab].push(newRow);
+  save();
+  document.getElementById('modal-overlay').classList.remove('open');
+  renderAll();
+  showToast('Entry added');
+}
+
+// ── TOAST ──
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ── INIT ──
+renderAll();
+</script>
+</body>
+</html>
